@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "cs_enum.proto";
+
+package cs;
+
+
+//ACCELERATE_WARN_NOTIFY = 4021;
+message AccelerateWarnNotify
+{
+   uint32 AcceCount = 1;		//第几次检测到玩家有加速行为
+}

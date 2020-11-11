@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cs;
+
+ 
+ 
+message PersonalInfo
+{
+     string Education=1;
+	 uint32 Power=2;
+	 uint32 Intelligence=3;
+	 uint32 Agile=4;
+}

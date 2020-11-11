@@ -1,0 +1,4975 @@
+syntax = "proto2";
+
+package cs;
+
+//客户端与服务器直接的通讯协议号从1到10000
+enum CSCmdType
+{
+    CS_TEST_HELLO_REQ = 1;
+    CS_TEST_HELLO_RES = 2;
+
+    // 获取大区列表
+    CS_GET_AREA_LIST_REQ = 1001;
+    CS_GET_AREA_LIST_RES = 1002;
+
+    // 账号登陆
+    CS_ACCOUNT_LOGIN_REQ = 1003;
+    CS_ACCOUNT_LOGIN_RES = 1004;
+
+    //结算关卡
+    CS_CLEAR_ACCOUNT_REQ = 1007;
+    CS_CLEAR_ACCOUNT_RES = 1008;
+
+    // 创建角色
+    CS_CREATE_ROLE_REQ  = 1010;
+    CS_CREATE_ROLE_RES  = 1011;
+
+    // 获取随机名字
+    CS_GET_RANDOM_NAME_REQ = 1012;
+    CS_GET_RANDOM_NAME_RES = 1013;
+
+    //获得称号通知客户端
+    CS_ADD_TITLE_NOTIFY = 1014;
+    //替换称号
+    CS_EQUIP_TITLE_REQ = 1015;
+    CS_EQUIP_TITLE_RES = 1016;
+    //称号超时通知客户端
+    CS_TITLE_TIMEOUT_NOTIFY = 1017;
+    //请求称号列表
+    CS_GET_TITLE_LIST_REQ = 1018;
+    CS_GET_TITLE_LIST_RES = 1019;
+
+    //刷新玩家数据(包括背包/属性/金钱等各种)(增)
+    CS_NOTIFY_REFRESH_PLAYER_DATA = 1020;
+
+    //请求装备称号ID，是否拥有称号
+    CS_GET_TITLE_EQUIP_REQ = 1021;
+    CS_GET_TITLE_EQUIP_RES = 1022;
+
+// 客户端主动退出游戏
+    CS_LOGOUT_REQ = 1025;
+    CS_LOGOUT_RES = 1026;
+
+    // 心跳包
+    CS_HEARTBEAT_REQ = 1027;
+    CS_HEARTBEAT_RES = 1028;
+
+    // 踢下线通知
+    CS_NOTIFY_KICK_OFF = 1029;
+
+    // 玩家移动请求
+    CS_HERO_MOVE_REQ  = 1030;
+    CS_HERO_MOVE_RES  = 1031;
+
+    // 通知玩家移动
+    CS_ACTOR_MOVE_NOTIFY = 1032;
+    // 通知有玩家进入视野
+    CS_ACTOR_ENTER_VIEW_NOTIFY = 1033;
+    // 通知玩家离开视野
+    CS_ACTOR_LEAVE_VIEW_NOTIFY = 1034;
+    // 玩家上报自己的位置
+    CS_REPORT_HERO_LOCATION = 1035;
+
+    // 通知玩家进入地图
+    CS_ENTER_MAP_INFO_NOTIFY = 1036;
+    // 客户端加载完地图资源之后告知服务器
+    CS_ENTER_MAP_READY_REQ = 1037;
+
+    // 切换主城失败
+    CS_CHG_CITY_TIME_OUT_NOTIFY = 1040;
+
+    // 广播主城的 ip:port
+    CS_CITY_HOST_NOTIFY = 1041;
+
+    //停止消息
+    CS_STOP_MOVE_NOTIFY = 1042;
+
+    //------------- BEGIN: 社交服协议 ---------------//
+    // 社交服登录协议
+    CS_SOCIAL_LOGIN_REQ = 1100;
+    CS_SOCIAL_LOGIN_RES = 1101;
+
+    // 增加好友请求
+    CS_SOCIAL_ADD_FRIEND_REQ = 1102;
+    CS_SOCIAL_ADD_FRIEND_RES = 1103;
+
+    // 删除好有请求
+    CS_SOCIAL_DEL_FRIEND_REQ    = 1104;
+    CS_SOCIAL_DEL_FRIEND_RES    = 1105;
+
+    // 加入黑名单
+    CS_SOCIAL_BLACK_LIST_REQ    = 1106;
+    CS_SOCIAL_BLACK_LIST_RES    = 1107;
+
+    // 新建分组
+    CS_SOCIAL_ADD_GROUP_REQ     = 1108;
+    CS_SOCIAL_ADD_GROUP_RES     = 1109;
+
+    // 更改分组
+    CS_SOCIAL_CHG_GROUP_REQ     = 1110;
+    CS_SOCIAL_CHG_GROUP_RES     = 1111;
+
+    // 访问空间状态
+    CS_SOCIAL_VISIT_SPACE_REQ   = 1112;
+    CS_SOCIAL_VISIT_SPACE_RES   = 1113;
+
+    // 点赞
+    CS_SOCIAL_THUMB_REQ         = 1114;
+    CS_SOCIAL_THUMB_RES         = 1115;
+
+    // 评论
+    CS_SOCIAL_COMMENT_REQ       = 1116;
+    CS_SOCIAL_COMMENT_RES       = 1117;
+
+    // 删除评论
+    CS_SOCIAL_DEL_COMMENT_REQ   = 1118;
+    CS_SOCIAL_DEL_COMMENT_RES   = 1119;
+
+    // 玩家移组操作
+    CS_SOCIAL_ROLE_CHG_GROUP_REQ = 1120;
+    CS_SOCIAL_ROLE_CHG_GROUP_RES = 1121;
+
+    // 发朋友圈前需要请求状态 ID
+    CS_SOCIAL_PRE_PUB_STATE_REQ = 1122;
+    CS_SOCIAL_PRE_PUB_STATE_RES = 1123;
+
+    // 发朋友圈
+    CS_SOCIAL_PUB_STATE_REQ     = 1124;
+    CS_SOCIAL_PUB_STATE_RES     = 1125;
+
+    // 删除朋友圈
+    CS_SOCIAL_DEL_STATE_REQ     = 1126;
+    CS_SOCIAL_DEL_STATE_RES     = 1127;
+
+    // 查看访客列表
+    CS_SOCIAL_GET_VISITOR_LIST_REQ = 1128;
+    CS_SOCIAL_GET_VISITOR_LIST_RES = 1129;
+
+    // 查看空间最近消息列表
+    CS_SOCIAL_GET_SPACE_MSG_LIST_REQ = 1130;
+    CS_SOCIAL_GET_SPACE_MSG_LIST_RES = 1131;
+
+    // 玩家编辑基本信息
+    CS_SOCIAL_EDIT_BASE_INFO_REQ    = 1132;
+    CS_SOCIAL_EDIT_BASE_INFO_RES    = 1133;
+
+    // 设置头像
+    CS_SOCIAL_SET_HEAD_ICON_REQ      = 1134;
+    CS_SOCIAL_SET_HEAD_ICON_RES      = 1135;
+
+    // 获取玩家个人信息
+    CS_SOCIAL_GET_BASE_INFO_REQ     = 1136;
+    CS_SOCIAL_GET_BASE_INFO_RES     = 1137;
+
+    // 红点
+    CS_SOCIAL_RED_POINT_NOTIFY = 1138;
+
+    //红点主动请求
+    CS_SOCIAL_RED_POINT_REQ = 1139;
+    CS_SOCIAL_RED_POINT_RES = 1140;
+
+    //举报
+    CS_SOCIAL_REPORT_REQ = 1141;
+    CS_SOCIAL_REPORT_RES = 1142;
+
+    //获取评论
+    CS_SOCIAL_GET_COMMENT_REQ = 1143;
+    CS_SOCIAL_GET_COMMENT_RES = 1145;
+
+    //批量获取空间信息
+    CS_SOCIAL_GET_BASE_INFO_BATCH_REQ = 1146;
+    CS_SOCIAL_GET_BASE_INFO_BATCH_RES = 1147;
+
+    //------------- END: 社交服协议 ---------------//
+
+    //好友协议(1950,2000]
+    //添加好友
+    CS_ADD_FRIEND_REQ = 1951;
+    CS_ADD_FRIEND_RES = 1952;
+
+    //根据角色名称/ID查找好友
+    CS_SEARCH_ROLE_REQ = 1953;
+    CS_SEARCH_ROLE_RES = 1954;
+
+    //查看社交关系中玩家装备与属性信息
+    CS_GET_EQUIPATTR_INFO_REQ = 1957;
+    CS_GET_EQUIPATTR_INFO_RES = 1958;
+
+    //删除好友
+    CS_DEL_FRIEND_REQ = 1959;
+    CS_DEL_FRIEND_RES = 1960;
+
+    //拉黑好友
+    CS_DEFRIEND_REQ = 1961;
+    CS_DEFRIEND_RES = 1962;
+
+    //取消拉黑
+    CS_CANCEL_DEFRIEND_REQ = 1963;
+    CS_CANCEL_DEFRIEND_RES = 1964;
+
+    //拉取关系数据协议
+    CS_PULL_RELA_REQ = 1965;
+    CS_PULL_RELA_RES = 1966;
+
+    //推荐好友
+    CS_RECOMMEND_FRIEND_REQ = 1967;
+    CS_RECOMMEND_FRIEND_RES = 1968;
+
+    //批量拉取信息
+    CS_BATCH_PULL_BRIEF_REQ = 1969;
+    CS_BATCH_PULL_BRIEF_RES = 1970;
+
+    //背包协议(2000,2100]
+    //穿戴装备
+    CS_TAKE_ON_EQUIP_REQ = 2003;
+    CS_TAKE_ON_EQUIP_RES = 2004;
+
+    //物品使用
+    CS_USE_GOODS_REQ = 2011;
+    CS_USE_GOODS_RES = 2012;
+
+    //装备打造
+    CS_FORGE_EQUIP_REQ = 2013;
+    CS_FORGE_EQUIP_RES = 2014;
+
+    //关卡刷怪
+    CS_REFRESH_MONSTER_REQ = 2101;
+    CS_REFRESH_MONSTER_RES = 2102;
+
+    //关卡信息查询
+    CS_QUERY_LEVEL_INFO_RES = 2015;
+    CS_QUERY_LEVEL_INFO_REQ = 2016;
+
+    //退出关卡
+    CS_QUIT_LEVEL_REQ = 2017;
+
+    //聊天
+    CS_CHAT_REQ = 2018;
+    CS_CHAT_NOTIFY = 2019;
+
+    //单人副本死亡与复活
+    CS_DIE_REQ = 2020;
+    CS_DIE_RES = 2021;
+    CS_REVIVE_REQ = 2022;
+    CS_REVIVE_RES = 2023;
+    //广播actor死亡
+    CS_ACTOR_DIE_NOTIFY = 2024;
+    //广播玩家死亡与复活
+    CS_PLAYER_REVIVE_NOTIFY = 2025;
+    //技能协议
+    //技能升级
+    CS_REQUEST_SKILL_UP = 2027;
+    CS_REPONSE_SKILL_UP = 2028;
+    //技能按钮卸载
+    CS_REQUIST_UNINSTALL_SKILL_SLOT = 2029;
+    CS_REPONSE_UNINSTALL_SKILL_SLOT = 2030;
+    //技能进阶
+    CS_REQUIST_SKILL_ADVANCE = 2031;
+    CS_REPONSE_SKILL_ADVANDE = 2032;
+    //技能残页装备
+    CS_REQUIST_ADVANCE_ITEM_ADD = 2033;
+    CS_REPONSE_ADVANCE_ITEM_ADD = 2034;
+    //技能施放按钮装备技能
+    CS_REQUIST_EQUIP_SKILL_SLOT = 2035;
+    CS_REPONSE_EQUIP_SKILL_SLOT = 2036;
+
+    //场景内瞬移
+    CS_JUMP_POS_INSCENE_NOTIFY = 2039;
+
+    //场景跳转
+    CS_JUMP_SCENE_REQ = 2040;
+    CS_JUMP_SCENE_RES = 2042;
+
+    //技能秘笈学习信息
+    CS_NOTIFY_TIPS_SKILL_LEARN = 2041;
+    //技能button按钮技能互换
+    CS_REQUIRED_BUTTON_SLOT_SWAP = 2043;
+    CS_RESPONSE_BUTTON_SLOT_SWAP = 2044;
+
+    //退出关卡
+    CS_QUIT_LEVEL_RES = 2045;
+
+	//技能书升级技能
+	CS_SKILL_LEVEL_UP_NOTIFY = 2047;
+
+    //任务相关2069--2079
+    //获取任务奖励
+
+    CS_TASK_GET_AWARD_NOTIFY = 2069;
+
+    CS_TASK_GET_AWARD_REQ = 2070;
+    CS_TASK_GET_AWARD_RES = 2071;
+
+    //刷新任务信息
+    CS_TASK_INFO_NOTIFY = 2072;
+
+    //接受任务
+    CS_TASK_ACCEPT_REQ = 2073;
+    CS_TASK_ACCEPT_RES = 2074;
+
+    //刷新已完成任务列表
+    CS_TASK_COMPLETE_LIST_NOTIFY = 2075;
+
+    //申请任务信息
+    CS_TASK_GET_INFO_REQ = 2076;
+    CS_TASK_GET_INFO_RES = 2077;
+
+    //放弃任务
+    CS_TASK_GIVE_UP_REQ = 2078;
+    CS_TASK_GIVE_UP_RES = 2079;
+
+    //通知客户端任务奖励已自动领取
+    CS_TASK_DERICT_AWARD_NOTIFY = 2081;
+
+    //事件相关2080--2089
+    //npc说话
+    CS_NPC_TALK_NOTIFY = 2080;
+    //CS_CLICK_NPC_RES = 2081;
+
+    //通知触发某事件
+    CS_TALK_EVENT_NOTIFY = 2082;
+
+    //事件结束
+    CS_TALK_END_REQ = 2083;
+    CS_TALK_END_RES = 2084;
+
+    //商店购买物品
+    CS_SHOP_BUY_GOODS_REQ = 2090;
+    CS_SHOP_BUY_GOODS_RES = 2091;
+
+    //商店信息查询
+    CS_QUERY_SHOP_INFO_REQ = 2092;
+    CS_QUERY_SHOP_INFO_RES = 2093;
+
+
+    // 加入队伍请求
+    CS_JOIN_TEAM_REQ = 2095;
+    // 入队伍回复
+    CS_JOIN_TEAM_RES = 2096;
+    // 通知队长有玩家申请入队
+    CS_JOIN_TEAM_TO_LEADER_NOTIFY = 2097;
+    // 队长审批入队请求
+    CS_LEADER_AGREE_REQ = 2098;
+    // 队长审批入队回复
+    CS_LEADER_AGREE_RES = 2099;
+    // 通知申请入队玩家队长审批结果
+    CS_JOIN_TEAM_RESULT_NOTIFY = 2100;
+    // 邀请组队回复
+    CS_INVITE_TEAM_RES = 2103;
+    // 请组队结果广播给被邀请方
+    CS_INVITE_TEAM_TO_MEMBER_NOTIFY = 2104;
+    // 队员审批邀请请求
+    CS_MEMBER_AGREE_REQ = 2105;
+    // 队员审批邀请回复
+    CS_MEMBER_AGREE_RES = 2106;
+    // 告诉队长被邀请方的答复
+    CS_INVITE_TEAM_RESULT_NOTIFY = 2107;
+    // 查看玩家队伍的信息请求
+    CS_GET_TEAM_INFO_REQ = 2108;
+    // 看玩家队伍的信息回复
+    CS_GET_TEAM_INFO_RES = 2109;
+    // 队伍发布招募请求
+    CS_TEAM_PUBLISH_REQ = 2110;
+    // 队伍发布招募回复
+    CS_TEAM_PUBLISH_RES = 2111;
+    // 取消队伍招募请求
+    CS_CANCEL_PUBLISH_REQ = 2112;
+    // 取消队伍招募回复
+    CS_CANCEL_PUBLISH_RES = 2113;
+    // 获取招募列表请求
+    CS_GET_TEAM_PUBLISH_LIST_REQ = 2114;
+    // 获取招募列表回复
+    CS_GET_TEAM_PUBLISH_LIST_RES = 2115;
+    // 队长职位转移请求
+    CS_SET_TEAM_LEADER_REQ = 2116;
+    // 队长职位转移回复
+    CS_SET_TEAM_LEADER_RES = 2117;
+    // 踢除队员请求
+    CS_KICK_OFF_TEAM_MEMBER_REQ = 2118;
+    // 踢除队员回复
+    CS_KICK_OFF_TEAM_MEMBER_RES = 2119;
+    // 主动离开队伍请求
+    CS_LEAVE_TEAM_REQ = 2120;
+    // 主动离开队伍回复
+    CS_LEAVE_TEAM_RES = 2121;
+    // 队长点击开放招募请求
+    CS_TEAM_CONSCRIBE_ENTER_LEVEL_REQ = 2122;
+    // 队长点击开放招募回复
+    CS_TEAM_CONSCRIBE_ENTER_LEVEL_RES = 2123;
+    // 通知队员队长招募进入副本
+    CS_TEAM_CONSCRIBE_ENTER_LEVEL_NOTIFY = 2124;
+    // 队员确认是否参加副本请求
+    CS_TEAM_CONFIRM_CONSCRIBE_LEVEL_REQ = 2125;
+    // 队员确认是否参加副本回复
+    CS_TEAM_CONFIRM_CONSCRIBE_LEVEL_RES = 2126;
+    // 知队长队员确认信息
+    CS_TEAM_LEADER_CONSCRIBE_LEVEL_NOTIFY = 2127;
+    // 通知队伍里所有成员招募结果
+    CS_TEAM_CONSCRIBE_LEVEL_RESULT_NOTIFY = 2128;
+    // 快速加入副本请求
+    CS_TEAM_MATCH_ENTER_MULTI_LEVEL_REQ = 2129;
+    // 快速加入副本回复
+    CS_TEAM_MATCH_ENTER_MULTI_LEVEL_RES = 2130;
+    // 快速加入副本通知，匹配队伍有变化时都会通知：比如有玩家加入或者离开
+    CS_TEAM_MATCH_ENTER_MULTI_LEVEL_NOTIFY = 2131;
+    // 广播队伍信息
+    CS_TEAM_MEMBER_NOTIFY = 2132;
+    // 邀请组队请求
+    CS_INVITE_TEAM_REQ = 2133;
+    // 通知队员他被队长踢出队伍
+    CS_KICK_OFF_TEAM_MEMBER_NOTIFY = 2134;
+
+    //签到请求
+    CS_SIGNIN_REQ = 2135;
+    //签到响应
+    CS_SIGNIN_RES = 2136;
+    //领取特殊礼包
+    CS_GET_SPECIAL_AWARD_REQ = 2137;
+    CS_GET_SPECIAL_AWARD_RES = 2138;
+
+
+    // 通知玩家怪物阵营关系值改变
+    CS_NPC_CAMP_FOR_PLAYER_NOTIFY = 2139;
+    //客户端做技能
+    CS_DO_SKILL_REQ  = 2140;
+    //客户端请求做技能失败
+    CS_DO_SKILL_RES = 2141;
+    //服务器通知视野做技能
+    CS_DO_SKILL_NOTIFY = 2142;
+    //客户端请求节点施法
+    CS_SKILL_CAST_REQ = 2143;
+    //返回节点施法结果
+    CS_SKILL_CAST_RES = 2144;
+    //通知玩家施法效果
+    CS_SKILL_EFFECT_NOTIFY  = 2145;
+
+    // 解散队伍请求
+    CS_TEAM_DISMISS_REQ = 2146;
+    // 散队伍响应
+    CS_TEAM_DISMISS_RES = 2147;
+    // 解散通知
+    CS_TEAM_DISMISS_NOTIFY = 2148;
+    // 通知队长队伍不满足进入副本条件
+    CS_TEAM_NOT_GOTO_LEVEL_NOTIFY = 2149;
+
+    //获取无尽关卡信息
+    CS_LEVEL_ENDLESS_GETINFO_REQ = 2153;
+    CS_LEVEL_ENDLESS_GETINFO_RES = 2154;
+
+    //无尽关卡一波结束
+    CS_ENDLESS_FINISHED_REQ = 2155;
+    CS_ENDLESS_FINISHED_RES = 2156;
+
+    //排行榜查询
+    CS_QUERY_RANKINFO_REQ = 2157;
+    CS_QUERY_RANKINFO_RES = 2158;
+
+    //创建帮会
+    CS_CREATE_FACTION_REQ = 2159;
+    CS_CREATE_FACTION_RES = 2160;
+
+    //查询无尽关卡基础信息
+    CS_LEVEL_GET_ENDLESS_BASEINFO_REQ = 2161;
+    CS_LEVEL_GET_ENDLESS_BASEINFO_RES = 2162;
+
+    //查询当前玩家的排名信息
+    CS_QUERY_CUR_ROLE_RANK_REQ = 2164;
+    CS_QUERY_CUR_ROLE_RANK_RES = 2165;
+
+    // 客户端请求邮件列表
+    CS_MAIL_GET_MAIL_LIST_REQ = 2168;
+    // 服务器回应邮件列表
+    CS_MAIL_GET_MAIL_LIST_RES = 2169;
+    // 玩家查看邮件
+    CS_MAIL_VIEW_MAIL_REQ = 2170;
+    // 服务器回应玩家查看邮件
+    CS_MAIL_VIEW_MAIL_RES = 2171;
+    // 玩家领取邮件
+    CS_MAIL_GET_MAIL_REQ = 2172;
+    // 服务器回应玩家领取邮件
+    CS_MAIL_GET_MAIL_RES = 2173;
+    // 玩家领取所有未领取邮件
+    CS_MAIL_GET_ALL_MAIL_REQ = 2174;
+    // 服务器回应玩家领取全部未读邮件
+    CS_MAIL_GET_ALL_MAIL_RES = 2175;
+    // 服务器通知玩家收到邮件
+    CS_MAIL_RECEIVE_MAIL_NOTIFY = 2176;
+    // 通知玩家离线私聊消息
+    CS_CHAT_OFFLINE_NOTIFY = 2177;
+
+
+    //拉取可加入帮会列表
+    CS_GET_FACTION_LIST_REQ = 2183;
+    CS_GET_FACTION_LIST_RES = 2184;
+
+    //申请加入某个/所有帮会
+    CS_JOININ_FACTION_REQ = 2185;
+    CS_JOININ_FACTION_RES = 2186;
+
+    //修改帮会宣言
+    CS_MODIFY_FACTION_MANIFESTO_REQ = 2187;
+    CS_MODIFY_FACTION_MANIFESTO_RES = 2188;
+
+    //拉取申请列表
+    CS_PULL_FACTION_APPLYLIST_REQ = 2189;
+    CS_PULL_FACTION_APPLYLIST_RES = 2190;
+
+    //关卡信息通知
+    CS_LEVEL_CONFIG_NOTIFY = 2191;
+
+	 // 玩家请求聊天
+    CS_CHAT_MESSAGE_REQ = 2192;
+    // 玩家请求聊天返回
+    CS_CHAT_MESSAGE_RES = 2193;
+    // 服务器广播聊天消息
+    CS_CHAT_MESSAGE_NOTIFY = 2194;
+
+
+    //关卡继续挑战
+    CS_LEVEL_CONTINUE_BATTE_REQ = 2196;
+    CS_LEVEL_CONTINUE_BATTE_RES = 2197;
+
+    // 通知玩家多人关卡开始了
+    CS_MULTI_LEVEL_START_NOTIFY = 2201;
+
+    //解散帮会
+    CS_DISMISS_FACTION_REQ = 2206;
+    CS_DISMISS_FACTION_RES = 2207;
+
+    //退出帮会
+    CS_QUIT_FACTION_REQ = 2208;
+    CS_QUIT_FACTION_RES = 2209;
+
+    //踢除帮会成员
+    CS_KICK_OFF_FACTION_REQ = 2210;
+    CS_KICK_OFF_FACTION_RES = 2211;
+
+    //审批申请者入帮会请求
+    CS_APPROVAL_FACTION_REQ = 2212;
+    CS_APPROVAL_FACTION_RES = 2213;
+
+    // 多人关卡 npc 移动
+    CS_ACTOR_MOVE_PATH_NOTIFY = 2214;
+
+    //提取[临时背包->物品包裹]
+    CS_LIFT_TEMP_BAG_REQ = 2215;
+    CS_LIFT_TEMP_BAG_RES = 2216;
+
+    //查询日常副本基础信息
+    CS_QUERY_DAILY_LEVEL_BASEINFO_REQ = 2217;
+    CS_QUERY_DAILY_LEVEL_BASEINFO_RES = 2218;
+
+    //进入帮会
+    CS_ENTER_FACTION_REQ = 2219;
+
+    //获得帮会详细信息
+    CS_GET_FACTION_DETAIL_REQ = 2220;
+    CS_GET_FACTION_DETAIL_RES = 2221;
+
+    //获得帮会成员列表信息
+    CS_GET_FACTION_MEMBERLIST_REQ = 2222;
+    CS_GET_FACTION_MEMBERLIST_RES = 2223;
+
+    //冲穴请求
+    CS_CHONGXUE_REQ = 2224;
+    CS_CHONGXUE_RES = 2225;
+
+    //穴位升级
+    CS_UPGRADE_ACUPOINT_REQ = 2226;
+    CS_UPGRADE_ACUPOINT_RES = 2227;
+
+    //穴位突破
+    CS_TUPO_ACUPOINT_REQ = 2228;
+    CS_TUPO_ACUPOINT_RES = 2229;
+
+    //升级铜人
+    CS_UPGRADE_BRONZE_REQ = 2230;
+    CS_UPGRADE_BRONZE_RES = 2231;
+
+    //铜人凝炼
+    CS_CONCISE_BRONZE_REQ = 2232;
+    CS_CONCISE_BRONZE_RES = 2233;
+
+    //请求退出多人副本
+    CS_LEAVE_MULTI_LEVEL_REQ = 2235;
+    //请求退出多人副本返回
+    CS_LEAVE_MULTI_LEVEL_RES = 2236;
+
+    //技能位置校验
+    // 通知玩家施法完成后的位置信息
+    CS_SKILL_CURR_POS_NOTIFY = 2250;
+    // 客户端通知服务器位置校验
+    CS_SKILL_CHECK_POS_REQ = 2251;
+    //服务器主动通知客户端控制npc施法
+    CS_SKILL_CONTRAL_NPC_NOTIFY = 2252;
+
+    //装备淬炼
+    CS_EQUIP_QUENCHING_REQ = 2253;
+    CS_EQUIP_QUENCHING_RES = 2254;
+    //技能buff
+    CS_ALL_BUFF_INFO_NOTIFY= 2255;
+
+    //多人副本结算
+    CS_MULTILEVEL_CLEAR_ACCOUNT_NOTIFY = 2258;
+    //多人副本杀怪
+    CS_MULTILEVEL_DROPGOODS_NOTIFY = 2259;
+
+    //增加buff信息通知
+    CS_ADD_BUFF_NOTIFY= 2265;
+    //删除buff
+    CS_DEL_BUFF_NOTIFY= 2266;
+
+    //多人副本特殊物品请求
+    CS_MULTILEVEL_PICKUP_GOODS_REQ  = 2269;
+    //多人副本特殊物品回复
+    CS_MULTILEVEL_PICKUP_GOODS_RES  = 2270;
+
+    //帮会捐赠
+    CS_DONATE_REQ = 2271;
+    CS_DONATE_RES = 2272;
+    //主城等视野内属性广播
+    CS_ACTOR_ATTR_CHANGE_NOTIFY = 2273; // 通知视野内玩家Actor对象变化
+    //帮会排行榜
+    CS_HONOR_ROLL_REQ = 2274;
+    CS_HONOR_ROLL_RES = 2275;
+
+    //通知通缉令已刷新
+    CS_WANTED_REFRESHED_NOTIFY = 2276;
+    //申请通缉令信息
+    CS_WANTED_INFO_REQ = 2277;
+    //申请通缉令信息响应
+    CS_WANTED_INFO_RES = 2278;
+    //通缉令boss刷新信息大地图上
+    CS_WANTED_NOTIFY = 2279;
+    //申请通缉令排行榜
+    CS_WANTED_RANK_REQ = 2280;
+    //申请通缉令排行榜响应
+    CS_WANTED_RANK_RES = 2281;
+    //激活通缉NPC
+    CS_WANTED_ACTIVE_REQ = 2282;
+    CS_WANTED_ACTIVE_RES = 2283;
+    //通缉任务完成
+    CS_WANTED_TASK_COMPLETE_NOTIFY = 2284;
+    //技能dota效果
+    CS_DOTA_EFFECT_NOTIFY= 2285;
+    //怪物逃跑
+    CS_ACTOR_ESCAPE_NOTIFY  = 2286;
+    //扔骰子结果(赌徒BOSS)
+    CS_MULTILEVEL_DICE_RESULT_NOTIFY = 2287;
+    //剧情结束通知 ,剧情锁定
+    CS_MULTILEVEL_ANIMATION_END_REQ = 2288;
+    CS_MULTILEVEL_ANIMATION_END_RES = 2289;
+    //人质回血满通知
+    CS_MULTILEVEL_ACTOR_FULL_BLOOD_NOTIFY = 2290;
+    //通知怪物死亡，目前是服务器主动杀死的非正常死亡
+    //CS_MULTILEVEL_ACTOR_DIE_NOTIFY = 2291;
+
+    //淬炼确认
+    CS_QUENCHING_CONFIRM_REQ = 2292;
+
+    //请求帮贡商品信息
+    //CS_FACTION_SHOP_GOODS_INFO_REQ = 2293;
+    //CS_FACTION_SHOP_GOODS_INFO_RES = 2294;
+    CS_QUENCHING_CONFIRM_RES = 2295;
+
+    //全服广播
+    CS_BROAD_MSG_NOTIFY = 2296;
+
+    //好友排行榜
+    CS_QUERY_FRIEND_RANK_REQ = 2298;
+    CS_QUERY_FRIEND_RANK_RES = 2299;
+
+    //帮贡商店购买
+    //CS_FACTION_SHOP_BUY_REQ = 2300;
+    //CS_FACTION_SHOP_BUY_RES = 2301;
+
+    // 取消快速加入请求
+    CS_CANCEL_QUICK_ENTER_REQ = 2302;
+    // 取消快速加入回复
+    CS_CANCEL_QUICK_ENTER_RES = 2303;
+    // 玩家离开队伍通知
+    CS_LEAVE_TEAM_NOTIFY = 2304;
+
+    //通知Npc消失
+    CS_NPC_DISAPPEAR_NOTIFY = 2305;
+
+    //帮会职位指定
+    CS_SPECIFY_POSITION_REQ = 2306;
+    CS_SPECIFY_POSITION_RES = 2307;
+
+    //帮会福利
+    CS_GET_WALFARE_REQ = 2308;
+    CS_GET_WALFARE_RES = 2309;
+
+    //物品售卖
+    CS_SELL_GOODS_REQ = 2310;
+    CS_SELL_GOODS_RES = 2311;
+
+    // 玩家完成新手引导请求
+    CS_FINISH_GUIDE_REQ = 2312;
+    CS_FINISH_GUIDE_RES = 2313;
+
+    CS_ROLE_RECOVERY_ATTR_NOTIFY = 2314;
+
+    // 通知玩家快速加入人数
+    CS_ENTER_MEMBER_NOTIFY = 2317;
+    //加解锁
+    CS_LOCK_REQ = 2318;
+    CS_LOCK_RES = 2319;
+
+    // 通知 公告
+    CS_NOTICE_MSG_NOTIFY = 2320;
+
+    //申请日常活动界面数据
+    CS_DAILY_EVENT_REQ = 2322;
+    //申请日常活动界面数据
+    CS_DAILY_EVENT_RES = 2323;
+
+    //申请重置日常任务
+    CS_DAILY_TASK_RESET_REQ = 2324;
+    //申请重置日常任务
+    CS_DAILY_TASK_RESET_RES = 2325;
+
+    //请求最新版本号
+    CS_QUERY_LATEST_VERSION_REQ = 2326;
+    CS_QUERY_LATEST_VERSION_RES = 2327;
+    //客户端版本更新上报
+    CS_CLIENT_VERSION_UPTATE_REPORT = 2328;
+
+    //背包扩容
+    CS_EXPAND_BAG_REQ = 2330;
+    CS_EXPAND_BAG_RES = 2331;
+
+    //通知客户端有秘闻任务
+    CS_TASK_RAND_NOTIFY = 2332;
+
+    //boss胜利通知
+    CS_BOSS_VICTORY_NOTIFY = 2334;
+
+    //角色信息查看
+    CS_LOOK_ROLE_INFO_REQ = 2335;
+    CS_LOOK_ROLE_INFO_RES = 2336;
+
+    //放弃通缉令
+    CS_WANTED_GIVE_UP_REQ = 2337;
+    CS_WANTED_GIVE_UP_RES = 2338;
+
+    // 取消招募
+    CS_CANCEL_CONSCRIBE_REQ = 2339;
+    CS_CANCEL_CONSCRIBE_RES = 2340;
+
+    // 队伍广播
+    CS_TEAM_NOTIFY = 2341;
+
+    //活跃数据请求
+    CS_GET_ACTIVITY_DATA_REQ = 2342;
+    CS_GET_ACTIVITY_DATA_RES = 2343;
+    //兑换物品
+    CS_EXCHANGE_ITEM_REQ = 2344;
+    CS_EXCHANGE_ITEM_RES = 2345;
+
+    // 队长切换场景请求
+    CS_CHANGE_SENCE_REQ = 2346;
+    // 队长切换场景回复
+    CS_CHANGE_SENCE_RES = 2347;
+
+    //购买副本进入次数
+    CS_BUY_LEVEL_ENTER_NUM_REQ = 2348;
+    CS_BUY_LEVEL_ENTER_NUM_RES = 2349;
+
+    //活跃进度条通知
+    CS_ACTIVITY_VALUE_NOTIFY = 2353;
+
+    // 服务器通知之后客户端的回包
+    CS_NOTIFY_CLIENT_REPLY = 2354;
+
+    // 客户端上报 oss 日志
+    CS_OSS_LOG_REQ = 2356;
+
+
+	//侠义商店
+    CS_QUERY_CHIVALROUS_SHOP_INFO_REQ = 2361;
+    CS_QUERY_CHIVALROUS_SHOP_INFO_RES = 2362;
+	CS_CHIVALROUS_SHOP_BUY_GOODS_REQ = 2363;
+	CS_CHIVALROUS_SHOP_BUY_GOODS_RES = 2364;
+
+    // 玩家请求单人竞技请求
+    CS_HUMAN_MAC_PVP_REQ = 2367;
+    // 玩家请求单人竞技回复
+    CS_HUMAN_MAC_PVP_RES = 2368;
+
+    // 通知服务器战斗结果请求
+    CS_HUMANMAC_FIGHT_RESULE_REQ = 2369;
+    // 通知服务器战斗结果回复
+    CS_HUMANMAC_FIGHT_RESULE_RES = 2370;
+
+    //客户端通知玩家战斗数据请求
+    CS_HUMANMAC_NOTICE_FIGHTING_REQ = 2371;
+    //客户端通知玩家战斗数据回复
+    CS_HUMANMAC_NOTICE_FIGHTING_RES = 2372;
+    //修改帮会公告
+    CS_MODIFY_FACTION_NOTICE_REQ = 2373;
+    CS_MODIFY_FACTION_NOTICE_RES = 2374;
+
+    //客户端请求获取无尽副本底层奖励
+    CS_ENDLESS_LEVEL_AWARD_REQ = 2375;
+    //客户端请求获取无尽副本底层回复
+    CS_ENDLESS_LEVEL_AWARD_RES = 2376;
+
+    //帮会建筑
+    CS_FACTION_BUILD_REQ = 2377;
+    CS_FACTION_BUILD_RES = 2378;
+
+    //通知客户端世界大boss奖励没有领取
+    CS_BIG_BOSS_AWARD_NOTIFY = 2379;
+
+    //副本当前的状态
+    CS_LEVEL_STATE_NOTIFY = 2380;
+
+    // 系统设置
+    CS_GET_SYSTEM_SET_REQ = 2381;
+    CS_GET_SYSTEM_SET_RES = 2382;
+
+    // 请求系统设置
+    CS_SET_SYSTEM_REQ = 2383;
+    CS_SET_SYSTEM_RES = 2384;
+
+	// 请求进入小boss引导副本
+	CS_ENTER_GUIDE_INSTANCE_REQ = 2385;
+	CS_ENTER_GUIDE_INSTANCE_RES = 2386;
+
+    //特殊技能学习
+    CS_SPECIAL_SKILL_LEARN_REQ = 2387;
+    CS_SPECIAL_SKILL_LEARN_RES = 2388;
+    //技能洗点
+    CS_SKILL_POINT_RESET_REQ = 2389;
+    CS_SKILL_POINT_RESET_RES = 2390;
+
+
+	//多人PVP报名
+	CS_MULTI_PVP_SIGN_REQ = 2391;
+	CS_MULTI_PVP_SIGN_RES = 2392;
+
+	//通知多人本排队数据
+	CS_MULTI_PVP_TEAM_QUEUE_NOTIFY = 2393;
+
+	//多人PVP 玩家数据
+	CS_MULTI_PVP_DATA_REQ = 2394;
+	CS_MULTI_PVP_DATA_RES = 2395;
+
+	//通知PVP准备阶段
+	CS_MULTI_PVP_PREPARE_STAGE_NOTIFY = 2396;
+
+	//战场结束 胜负展示
+	CS_MULTI_PVP_RESULT_SHOW_NOTIFY = 2397;
+
+	//下发pvp队伍信息
+	CS_MULTI_PVP_TEAM_INFO_NOTIFY = 2398;
+
+	//单人挑战报名
+	CS_SINGLE_PVP_SIGN_REQ = 2400;
+	CS_SINGLE_PVP_SIGN_RES = 2401;
+
+	CS_SINGLE_PVP_REQUEST_NOTIFY = 2402;
+
+	CS_SINGLE_PVP_REPLY_REQ = 2403;
+	CS_SINGLE_PVP_REPLY_RES = 2404;
+
+	CS_SINGLE_PVP_REPLY_NOTIFY = 2405;
+	CS_SINGLE_PVP_RESULT_NOTIFY = 2406;
+
+    CS_QUERY_YUNBIAO_DATA_REQ = 2407;
+    CS_QUERY_YUNBIAO_DATA_RES = 2408;
+
+	//多人pvp通知积分变化
+	CS_MULTI_PVP_SCORE_NOTIFY = 2409;
+
+	//上线请求多人pvp排队
+	CS_MULTI_PVP_TEAM_QUEUE_REQ = 2410;
+	CS_MULTI_PVP_TEAM_QUEUE_RES = 2411;
+
+    CS_START_YUNBIAO_REQ = 2412;
+    CS_START_YUNBIAO_RES = 2413;
+
+    CS_HAPPEN_JIEBIAO_NOTIFY = 2414;
+    CS_JIEBIAO_CHOICE_REQ = 2415;
+    CS_YUNBIAO_NOTIFY = 2416;
+
+    CS_MULTI_BIAOCHE_NOTIFY = 2417;
+
+    // 客户端通知服务器镖车路径点列表
+    CS_BIAO_CHE_PATH_REQ = 2418;
+    CS_BIAO_CHE_PATH_RES = 2419;
+
+    CS_HUMANMAC_NOTICE_FIGHTING_NOTIFY = 2420;
+
+    CS_QUERY_YUNBIAO_DATA_NOTIFY = 2421;
+
+	CS_PVP_WAIT_CONFIRM_NOTIFY = 2422;
+
+	CS_PVP_CONFIRM_REQ = 2423;
+	CS_PVP_CONFIRM_RES = 2424;
+
+    // 通知客户端镖车状态
+    CS_BIAO_CHE_STATE_NOTIFY = 2425;
+
+	CS_PVP_CONFIRM_RESULT_NOTIFY = 2426;
+
+    CS_PLAYER_OUTWARDINFO_REQ = 2427;
+    CS_PLAYER_OUTWARDINFO_RES = 2428;
+
+    CS_PLAYER_UNLOCKED_OUTWARD_REQ = 2429;
+    CS_PLAYER_UNLOCKED_OUTWARD_RES = 2430;
+
+    CS_OUTWARD_UNLOCK_REQ = 2431;
+    CS_OUTWARD_UNLOCK_RES = 2432;
+
+    CS_OUTWARD_NEWUNLOCK_NOTIFY = 2433;
+
+    CS_OPE_ENEMY_REQ = 2434;
+    CS_OPE_ENEMY_RES = 2435;
+    CS_OPE_ENEMY_NOTIFY = 2436;
+    CS_DEL_ENEMY_AGREE = 2437;
+
+    //任务通过对话选项获得交换物品
+    CS_TASK_CHANGE_ITEM_REQ = 2438;
+    CS_TASK_CHANGE_ITEM_RES = 2439;
+
+	CS_JIEBIAO_CHOICE_RES = 2440;
+    CS_DESTROY_LUZHANG_REQ = 2441;
+
+	CS_MOVE_INTO_NPC_AREA_REQ = 2442;
+	CS_MOVE_INTO_NPC_AREA_RES = 2443;
+	//请求关卡数据
+    CS_LEVEL_INTO_REQ = 2444;
+	CS_LEVEL_INTO_RES = 2445;
+
+    // 进入地图 请求/回复
+    CS_ENTER_MAP_REQ = 2446;
+    CS_ENTER_MAP_RES = 2447;
+
+    //聚会通知
+    CS_MEETING_NOTIFY = 2448;
+    //掷骰子
+    CS_ZHENG_TOUZI_REQ = 2449;
+    CS_ZHENG_TOUZI_RES = 2450;
+    //帮会聚会排行榜
+    CS_GET_RANK_REQ = 2451;
+    CS_GET_RANK_RES = 2452;
+
+	//改变pk模式
+	CS_CHANGE_PK_MODE_REQ = 2453;
+	CS_CHANGE_PK_MODE_RES = 2454;
+
+	//下发仇人和敌人
+	CS_ENEMY_LIST_NOTIFY = 2455;
+
+    CS_MEET_DATA_NOTIFY = 2456;
+
+    // 组队请求
+    CS_MAKE_TEAM_REQ = 2457;
+    // 组队回复
+    CS_MAKE_TEAM_RES = 2458;
+    // 跟随请求 (跟随目标可以为任意队伍成员)
+    CS_FOLLOW_REQ = 2459;
+    // 跟随回复
+    CS_FOLLOW_RES = 2460;
+    // 取消跟随请求
+    CS_CANCEL_FOLLOW_REQ = 2461;
+    // 取消跟随回复
+    CS_CANCEL_FOLLOW_RES = 2462;
+    //使用金币购买一次投骰子次数
+    CS_GET_ROLL_TIME_REQ = 2057;
+    CS_GET_ROLL_TIME_RES = 2058;
+
+    // 户端加载完地图资源之后通知服务器回复
+    CS_ENTER_MAP_READY_RES = 2463;
+
+    // 野外头目刷新进度
+    CS_YE_WAI_BOSS_PROGRESS_NOTIFY = 2464;
+
+    // 传功请求
+    CS_PLAYER_TRAIN_REQ = 2465;
+    CS_PLAYER_TRAIN_RES = 2466;
+    // 接受传功请求
+    CS_PLAYER_TRAIN_REPLY_REQ = 2467;
+    CS_PLAYER_TRAIN_REPLY_RES = 2468;
+
+    // 传功开始通知
+    CS_PLAYER_TRAIN_START_NOTIFY = 2469;
+    // 传功中断通知
+    CS_PLAYER_TRAIN_BREAK_NOTIFY = 2470;
+    // 传功结束通知
+    CS_PLAYER_TRAIN_FINISH_NOTIFY = 2471;
+
+    // 清除野外头目进度
+    CS_YE_WAI_BOSS_PROGRESS_CLEAR_NOTIFY = 2472;
+
+    // 传功邀请通知
+    CS_PLAYER_TRAIN_INVITE_NOTIFY = 2473;
+
+    CS_MEET_END_NOTIFY = 2474;
+    // 准备开始传功
+    CS_PLAYER_TRAIN_READY_NOTIFY = 2475;
+
+    //轻功
+    CS_QINGKUNG_REQ = 2476;
+    CS_QINGKUNG_RES = 2477;
+
+    //通知轻功
+    CS_QINKUNG_NOTIFY = 2478;
+
+    //重新上线继续传功
+    CS_PLAYER_TRAIN_CONTINUE_NOTIFY = 2479;
+
+    //消息提示
+    CS_NOTIFY_REQ = 2480;
+    CS_NOTIFY_RES = 2481;
+
+    //删除消息提示
+    CS_NOTIFY_REMOVE_REQ = 2482;
+    CS_NOTIFY_REMOVE_RES = 2483;
+
+    //帮会仇人提示
+    CS_JOIN_FACTION_ENEMYDATA_CHANGE_NOTIFY = 2484;
+
+    //CS_PLAYER_PICK_REQ = 2485;
+    CS_PLAYER_PICK_ACT_NOTIFY = 2486;
+
+    //采集协议
+    CS_PLAYER_PICK_START_REQ = 2487;
+    CS_PLAYER_PICK_START_RES = 2488;
+    CS_PLAYER_PICK_END_REQ = 2489;
+    CS_PLAYER_PICK_END_RES = 2490;
+
+    //武魂
+    CS_FIGHT_SOUL_UP_REQ = 2491;
+    CS_FIGHT_SOUL_UP_RES = 2492;
+
+    //客户端完成任务条件
+    CS_CLIENT_COMPLETE_TASK_REQ = 2493;
+    CS_CLIENT_COMPLETE_TASK_RES = 2494;
+
+    // 创建队伍请求与回复(组队平台)
+    CS_CREATE_TEAM_REQ = 2495;
+    CS_CREATE_TEAM_RES = 2496;
+    // 切换目标请求与回复
+    CS_CHANGE_TARGET_REQ = 2497;
+    CS_CHANGE_TARGET_RES = 2498;
+
+    //武魂
+    CS_FIGHT_SOUL_REQ = 2499;
+    CS_FIGHT_SOUL_RES = 2500;
+
+    // 获取附近队伍
+    CS_GET_NEAR_TEAM_REQ = 2501;
+    CS_GET_NEAR_TEAM_RES = 2502;
+    //像触发请求
+    CS_IMAGE_TRIGGER_REQ = 2506;
+    CS_IMAGE_TRIGGER_RES = 2507;
+
+    //搜索帮会
+    CS_SEARCH_FACTION_REQ = 2508;
+    CS_SEARCH_FACTION_RES = 2509;
+
+    // 自动同意入帮操作
+    CS_AUTO_APPROVE_FACTION_REQ = 2510;
+    CS_AUTO_APPROVE_FACTION_RES = 2511;
+
+    // 领取帮会俸禄
+    CS_GET_FACTION_SALARY_REQ = 2512;
+    CS_GET_FACTION_SALARY_RES = 2513;
+
+    // 进入帮会领地请求
+    CS_ENTER_FACTIONSCENE_REQ = 2514;
+    CS_ENTER_FACTIONSCENE_RES = 2515;
+
+    // 切换目标通知
+    CS_CHANGE_TARGET_NOTIFY = 2516;
+
+    //申请活动界面数据
+    CS_ACTIVITY_NUM_INFO_REQ = 2517;
+    CS_ACTIVITY_NUM_INFO_RES = 2518;
+
+    // 拉取帮会账房数据
+    CS_GET_FACTION_ACCOUNTANT_REQ = 2519;
+    CS_GET_FACTION_ACCOUNTANT_RES = 2520;
+
+	//拉取拍卖行数据
+	CS_GET_AUCTION_DATA_REQ = 2521;
+	CS_GET_AUCTION_DATA_RES = 2522;
+
+	//拍卖行竞拍
+	CS_AUCTION_BID_REQ = 2523;
+	CS_AUCTION_BID_RES = 2524;
+
+	//拍卖记录
+	CS_AUCTION_HISTORY_RECORD_REQ = 2525;
+	CS_AUCTION_HISTORY_RECORD_RES = 2526;
+
+	//请求我的拍卖数据
+	CS_MY_AUCTION_DATA_REQ = 2527;
+	CS_MY_AUCTION_DATA_RES = 2528;
+
+    // 点赞请求
+    CS_LEVEL_GOOD_JOB_REQ = 2531;
+    CS_LEVEL_GOOD_JOB_RES = 2532;
+
+    //外观信息变更通知
+    CS_OUTWARD_CHANGE_NOTIFY = 2533;
+
+    // 队伍Tips通知
+    CS_TEAM_TIPS_NOTIFY = 2534;
+
+    // 玩家每帧下发视野内变化信息
+    CS_ACTOR_FRAME_NOTIFY = 2536;
+
+    //请求所有摊位数据,按标签请求
+    CS_ALL_STALL_REQ = 2537;
+    CS_ALL_STALL_RES = 2538;
+
+    //摆摊购买请求
+    CS_BUY_STALL_ITEM_REQ = 2539;
+    CS_BUY_STALL_ITEM_RES = 2540;
+
+    //请求玩家摊位信息
+    CS_PLAYER_STALL_REQ = 2541;
+    CS_PLAYER_STALL_RES = 2542;
+
+    //请求均价等信息
+    CS_STALL_ITEM_INFO_REQ = 2543;
+    CS_STALL_ITEM_INFO_RES = 2544;
+
+    //物品上架
+    CS_ITEM_ON_STALL_REQ = 2545;
+    CS_ITEM_ON_STALL_RES = 2546;
+
+    //物品下架
+    CS_ITEM_OFF_STALL_REQ = 2547;
+    CS_ITEM_OFF_STALL_RES = 2548;
+
+    //坐骑
+    CS_RIDE_REQ = 2549;
+    CS_RIDE_RES = 2550;
+    //坐骑通知
+    CS_RIDE_NOTIFY = 2551;
+
+    //皇城之战申请报名
+    CS_WAR_OF_ROYAL_CITY_SIGNIN_REQ = 2552;
+    CS_WAR_OF_ROYAL_CITY_SIGNIN_RES = 2553;
+
+    // 获取成就列表
+    CS_GET_ACHIEVE_LIST_REQ = 2554;
+    CS_GET_ACHIEVE_LIST_RES = 2555;
+
+    // 领取成就奖励
+    CS_GET_ACHIEVE_AWARD_REQ = 2556;
+    CS_GET_ACHIEVE_AWARD_RES = 2557;
+
+    // 主动通知客户端成就完成
+    CS_FINISH_ACHIEVE_NOTIFY = 2558;
+
+
+    // 通知跟随
+    CS_FOLLOW_CHANGE_SENCE_NOTIFY = 2559;
+	//装备升段
+	CS_EQUIP_ENHANCE_LEVEL_REQ = 2562;
+	CS_EQUIP_ENHANCE_LEVEL_RES = 2563;
+    //位置强化
+    //装备位置强化请求
+    CS_POSITION_STRENGTHEN_REQ = 2564;
+    //装备位置强化恢复
+    CS_POSITION_STRENGTHEN_RES = 2565;
+    // 查询皇城之战排行榜
+    CS_WAR_OF_ROYAL_CITY_RANK_REQ = 2566;
+    CS_WAR_OF_ROYAL_CITY_RANK_RES = 2567;
+
+    // 积分变化
+    CS_WAR_OF_ROYAL_CITY_SCORE_NOTIFY = 2568;
+
+    // 离开等待场景
+    CS_WAR_OF_ROYAL_CITY_LEAVE_WAIT_SCENE_REQ = 2569;
+    CS_WAR_OF_ROYAL_CITY_LEAVE_WAIT_SCENE_RES = 2570;
+
+    // 皇城之战结算
+    CS_WAR_OF_ROYAL_CITY_CLEAR_ACCOUNT_NOTIFY = 2571;
+    // Boss被击杀
+    //CS_WAR_OF_ROYAL_CITY_BOSS_KILLED_NOTIFY = 2571;
+
+    // 等待场景信息
+    CS_WAR_OF_ROYAL_CITY_WAIT_SCENE_INFO_NOTIFY = 2572;
+
+    // 查询皇城之战报名前查询
+    CS_WAR_OF_ROYAL_CITY_INFO_REQ = 2573;
+    CS_WAR_OF_ROYAL_CITY_INFO_RES = 2574;
+
+    //离线经验领取
+    CS_OFFLINE_EXP_REQ = 2575;
+    CS_OFFLINE_EXP_RES = 2576;
+
+    // 皇城之战通知总积分
+    CS_WAR_OF_ROYAL_CITY_TOTAL_SCORE_NOTIFY = 2577;
+
+    //答题信息
+    CS_QUESTION_INFO_REQ = 2578;
+    CS_QUESTION_INFO_RES = 2579;
+    //答题
+    CS_ANSWER_QUESTION_REQ = 2580;
+    CS_ANSWER_QUESTION_RES = 2581;
+
+
+    //填充装备孔
+    CS_FILL_EQUIP_HOLE_REQ = 2582;
+    CS_FILL_EQUIP_HOLE_RES = 2583;
+    //从装备孔中移除
+    CS_REMOVE_EQUIP_HOLE_REQ = 2584;
+    CS_REMOVE_EQUIP_HOLE_RES = 2585;
+
+    // 皇城之战剩余时间通知
+    CS_WAR_OF_ROYAL_CITY_TIME_NOTIFY = 2586;
+
+    //接取答题任务
+    CS_GET_QUESTION_TASK_REQ = 2587;
+    CS_GET_QUESTION_TASK_RES = 2588;
+
+    //是否可参加答题通知
+    CS_DAILY_QUESTION_NOTIFY = 2589;
+
+    // 购买体力值请求
+    CS_BUY_VITVALUE_REQ = 2590;
+    // 购买体力值回复
+    CS_BUY_VITVALUE_RES = 2591;
+    //客户端单人镜像进入
+    CS_DEAL_SINGLE_IMAGE_REQ = 2592;
+    //客户端单人镜像返回消息
+    CS_DEAL_SINGLE_IMAGE_RES = 2593;
+    // Boss被击杀
+    CS_WAR_OF_ROYAL_CITY_BOSS_KILLED_NOTIFY = 2594;
+
+	//机器人放技能
+	CS_AI_PLAYER_DOSKILL_NOTIFY = 2595;
+
+	//装备鉴定
+	CS_EQUIP_IDENTIFY_REQ = 2596;
+	CS_EQUIP_IDENTIFY_RES = 2597;
+
+    // 随机邀请组队
+    CS_TEAM_RANDOM_REQ = 2598;
+    CS_TEAM_RANDOM_RES = 2599;
+
+    //游戏完结申请奖励
+    CS_GET_WORSHIP_GOD_AWARD_INFO_REQ = 2600;
+    CS_GET_WORSHIP_GOD_AWARD_INFO_RES = 2601;
+    //打开箱子
+    CS_GET_WORSHIP_GOD_AWARD_REQ = 2602;
+    CS_GET_WORSHIP_GOD_AWARD_RES = 2603;
+    //申请当前福神信息
+    CS_WORSHIP_GOD_INFO_REQ = 2604;
+    CS_WORSHIP_GOD_INFO_RES = 2605;
+
+    // 获取领地归属信息
+    CS_GET_TERRITORY_LIST_REQ = 2606;
+    CS_GET_TERRITORY_LIST_RES = 2607;
+
+    // 宣战领地
+    CS_DECL_TERRITORY_REQ = 2608;
+    CS_DECL_TERRITORY_RES = 2609;
+
+    //签到
+    CS_SIGNIN_INFO_REQ = 2611;
+    CS_SIGNIN_INFO_RES = 2612;
+
+    //武器竞技报名
+    CS_WEAPONFIGHT_ENTER_REQ = 2613;
+    CS_WEAPONFIGHT_ENTER_RES = 2614;
+    // 武器竞技战斗阶段通知
+    CS_WEAPONFIGHT_STATE_NOTIFY = 2615;
+    // 武器竞技混战阶段个人信息
+    CS_WEAPONFIGHT_MIX_SINGLE_NOTIFY = 2616;
+    // 武器竞技混战排行榜
+    CS_WEAPONFIGHT_MIX_LADDER_REQ = 2617;
+    CS_WEAPONFIGHT_MIX_LADDER_RES = 2618;
+    // 决赛对阵信息
+    CS_WEAPONFIGHT_FINALFIGHT_INFO_NOTIFY = 2619;
+
+    // 庄周梦境进去等待场景
+    CS_ZHUANGZHOU_ENTER_WAIT_SENCE_REQ = 2620;
+    CS_ZHUANGZHOU_ENTER_WAIT_SENCE_RES = 2621;
+
+    // 离开等待场景
+    CS_ZHUANGZHOU_LEAVE_WAIT_SENCE_REQ = 2622;
+    CS_ZHUANGZHOU_LEAVE_WAIT_SENCE_RES = 2623;
+
+    // 进入传送区域
+    CS_ZHUANGZHOU_ENTER_TRANSMIT_AREA_REQ = 2624;
+    CS_ZHUANGZHOU_ENTER_TRANSMIT_AREA_RES = 2625;
+
+    // 获取积分通知
+    CS_ZHUANGZHOU_CUR_SCORE_NOTIFY = 2626;
+
+    // 传送门通知信息
+    CS_ZHUANGZHOU_TRANSMIT_INFO_NOTIFY = 2627;
+
+    // 拿起旗帜
+    CS_TAKE_MONSTER_REQ = 2628;
+    CS_TAKE_MONSTER_RES = 2629;
+
+    // 放下旗帜
+    CS_PUT_MONSTER_REQ = 2630;
+    CS_PUT_MONSTER_RES = 2631;
+
+    // 庄周梦境等待场景倒计时通知
+    CS_ZHUANGZHOU_WAIT_SENCE_TM_NOTIFY = 2632;
+
+    // 武器竞技 决赛阶段参赛通知
+    CS_WEAPONFIGHT_FINALPLAYER_NOTIFY = 2633;
+
+    //  获取城池的详细信息
+    CS_GET_TERRITORY_DETAIL_REQ = 2634;
+    CS_GET_TERRITORY_DETAIL_RES = 2635;
+
+    // 编辑领地战斗公告
+    CS_EDIT_TERRITORY_NOTICE_REQ = 2636;
+    CS_EDIT_TERRITORY_NOTICE_RES = 2637;
+
+    // 离开传送区域
+    CS_ZHUANGZHOU_LEAVE_TRANSMIT_AREA_REQ = 2638;
+    CS_ZHUANGZHOU_LEAVE_TRANSMIT_AREA_RES = 2639;
+
+    CS_NEWSVR_AWARD_INFO_REQ = 2640;
+    CS_NEWSVR_AWARD_INFO_RES = 2641;
+
+    CS_NEWSVR_AWARD_GET_REQ = 2642;
+    CS_NEWSVR_AWARD_GET_RES = 2643;
+
+    //江湖试炼请求
+    CS_JH_TRIALS_REQ = 2644;
+    CS_JH_TRIALS_RES = 2645;
+
+    //江湖试炼-编辑我的队友请求
+    CS_JH_EDIT_MY_TEAM_REQ = 2646;
+    CS_JH_EDIT_MY_TEAM_RES = 2647;
+
+    //江湖试炼 --推荐我的队友
+    CS_JH_RECOMMEND_MY_TEAM_REQ = 2648;
+    CS_JH_RECOMMEND_MY_TEAM_RES = 2649;
+
+    //庄周梦境 阶段时间通知
+    CS_ZHUANGZHOU_STAGE_TM_NOTIFY = 2650;
+
+    //武器竞技退出报名
+    CS_WEAPONFIGHT_LEAVE_REQ = 2651;
+    CS_WEAPONFIGHT_LEAVE_RES = 2652;
+
+	//领取等级奖励
+	CS_GET_LEVEL_UP_REWARD_REQ = 2653;
+	CS_GET_LEVEL_UP_REWARD_RES = 2654;
+
+	//查询等级领取数据
+	CS_QUERY_LEVEL_UP_REWARD_REQ = 2655;
+	CS_QUERY_LEVEL_UP_REWARD_RES = 2656;
+
+    // 帮会小红点提示
+    CS_FACTION_OPE_EVENT_NOTIFY = 2657;
+	//道具合成
+	CS_ITEM_COMPOSE_REQ = 2658;
+	CS_ITEM_COMPOSE_RES = 2659;
+
+    // 操作怪物通知(拿起，放下)
+    CS_OPERATE_MONSTER_NOTIFY = 2660;
+
+    //许愿协议
+    CS_WISH_POOL_REQ = 2661;
+    CS_WISH_POOL_RES = 2662;
+
+    // 查询是否有拿起怪物
+    CS_QUERY_TAKE_MONSTER_REQ = 2663;
+    CS_QUERY_TAKE_MONSTER_RES = 2664;
+
+    // 参加领地战
+    CS_ENTER_TERRITORY_WAR_REQ = 2665;
+    CS_ENTER_TERRITORY_WAR_RES = 2666;
+
+    //战报请求
+    CS_QUERY_TERRITORY_WAR_REQ = 2667;
+    CS_QUERY_TERRITORY_WAR_RES = 2668;
+    //下发战场基本信息
+    CS_TERRITORY_WAR_NOTIFY = 2669;
+    //华表占领通知
+    CS_HUA_BIAO_FORCES_NOTIFY = 2670;
+
+    CS_WEAPONFIGHT_FINALWATCH_REQ = 2671;
+    CS_WEAPONFIGHT_FINALWATCH_RES = 2672;
+
+    CS_WEAPONFIGHT_FINALUNWATCH_REQ = 2673;
+    CS_WEAPONFIGHT_FINALUNWATCH_RES = 2674;
+
+    // 限时副本的剩余时间
+    CS_LEVEL_TIME_LIMIT_NOTIFY = 2675;
+    // 进入下一层副本的时间戳
+    CS_LEVEL_EXIT_COUNT_DOWN_NOTIFY = 2676;
+    // 怒火救援获取buff阶段
+    CS_LEVEL_QUICKRESCUE_BUFFSTATE_NOTIFY = 2677;
+
+    // 体验活动
+    CS_ACT_EXPERIENCE_REQ = 2678;
+    CS_ACT_EXPERIENCE_RES = 2679;
+    //通知客户端玩家复活
+    CS_ACTOR_REVIVE_NOTIFY = 2680;
+
+    CS_MONSTER_OWNER_NOTIFY  = 2681;
+
+    //申请攻略NPC数据
+    CS_FOLLOW_NPC_INFO_REQ = 2682;
+    CS_FOLLOW_NPC_INFO_RES = 2683;
+    //设置npc跟随
+    CS_SET_FOLLOW_NPC_REQ = 2684;
+    CS_SET_FOLLOW_NPC_RES = 2685;
+    //赠送礼物
+    CS_GIVE_PRESENT_REQ = 2686;
+    CS_GIVE_PRESENT_RES = 2687;
+    //接取丹青卷轴任务
+    CS_ACCEPT_FOLLOW_NPC_TASK_REQ = 2688;
+    CS_ACCEPT_FOLLOW_NPC_TASK_RES = 2689;
+    //武器竞技冠军信息
+    CS_WPFIGHT_FINAL_CHAMPION_NOTIFY = 2690;
+    //怪物额外信息通知
+    CS_MONSTER_EXTRAINFO_NOTIFY = 2691;
+    // 武器竞技通知观战结束
+    CS_WEAPONFIGHT_FINALUNWATCH_NOTIFY = 2692;
+
+    //返回装备孔里的物品
+    CS_BACK_EQUIP_HOLE_ITEM_NOTIFY = 2693;
+
+    // 通天塔
+    // 进入等待场景
+    CS_TTTOWER_ENTER_WAIT_SENCE_REQ = 2694;
+    CS_TTTOWER_ENTER_WAIT_SENCE_RES = 2695;
+    // 离开等待场景
+    CS_TTTOWER_LEAVE_WAIT_SENCE_REQ = 2696;
+    CS_TTTOWER_LEAVE_WAIT_SENCE_RES = 2697;
+    // 通知阶段时间 积分 排名
+    CS_TTTOWER_ACTIVITY_INFO_NOTIFY = 2698;
+    // 请求排行榜
+    CS_TTTOWER_RANK_REQ = 2699;
+    CS_TTTOWER_RANK_RES = 2700;
+    //通知客户端跟随NPC释放buff
+    CS_FOLLOW_NPC_ADD_BUFF_NOTIFY = 2701;
+    //通知客户端跟随NPCID
+    CS_FOLLOW_NPC_ID_NOTIFY = 2702;
+
+    // 通知通天塔开始信息
+    CS_TTTOWER_START_INFO_NOTIFY = 2703;
+    // 通知通天塔结算信息
+    CS_TTTOWER_ACCOUNT_INFO_NOTIFY = 2704;
+
+    // 小地图信息
+    CS_MINI_MAP_INFO_REQ = 2705;
+    CS_MINI_MAP_INFO_RES = 2706;
+
+    //玩家通过阻挡墙
+    CS_PASS_BLOCKS_REQ = 2707;
+
+    // 皇城战中被击杀
+    CS_WAR_OF_ROYAL_CITY_KILLED_NOTIFY = 2708;
+    // 连杀广播
+    CS_WAR_OF_ROYAL_CITY_COMBO_KILL_NOTIFY = 2709;
+
+    // 通天塔状态通知
+    CS_TTTOWER_STATUE_NOTIFY = 2710;
+
+    // 皇城战中连杀被终结
+    CS_WAR_OF_ROYAL_CITY_COMBO_END_NOTIFY = 2711;
+
+    // 客户端校正自己的位置
+    CS_CHECK_SELF_LOC_REQ = 2712;
+
+    //查询排行榜
+    CS_YEWAI_BOSS_RANK_REQ = 2713;
+    CS_YEWAI_BOSS_RANK_RES = 2714;
+    //查询活动信息
+    CS_YEWAI_BOSS_INFO_REQ = 2715;
+    CS_YEWAI_BOSS_INFO_RES = 2716;
+    //武器竞技是否胜利
+    CS_WEAPONFIGHT_FIGHTRESULT_NOTIRY = 2717;
+    // 广播队伍信息
+    CS_TEAM_INFO_NOTIFY = 2718;
+
+    // 请求参加世界大BOSS
+    CS_HLZZ_JOIN_REQ = 2719;
+    CS_HLZZ_JOIN_RES = 2720;
+
+    // 大BOSS血量伤害上报
+    CS_HLZZ_REPORT_HEARTHP_REQ = 2721;
+    CS_HLZZ_REPORT_HEARTHP_RES = 2722;
+
+    // 请求个人排名信息
+    CS_HLZZ_ROLE_RANK_INFO_REQ = 2723;
+    CS_HLZZ_ROLE_RANK_INFO_RES = 2724;
+    //装备洗练
+    CS_EQUIP_WASH_REQ                = 2725;
+    CS_EQUIP_WASH_RES                = 2726;
+    CS_EQUIP_WASH_ATTR_REPLACE_REQ   = 2727;
+    CS_EQUIP_WASH_ATTR_REPLACE_RES   = 2728;
+    CS_GET_EQUIP_WASH_STATUS_REQ     = 2729;
+    CS_GET_EQUIP_WASH_STATUS_RES     = 2730;
+
+    // 皇陵之争BOSS剩余血量通知
+    CS_HLZZ_BOSS_HP_NOTIFY = 2731;
+
+    // 活动结束通知
+    CS_HLZZ_END_NOTIFY = 2732;
+
+    // 请求帮会排名信息
+    CS_HLZZ_FAC_RANK_INFO_REQ = 2733;
+    CS_HLZZ_FAC_RANK_INFO_RES = 2734;
+
+    //通缉令NPC怪物转换
+    CS_WANTED_NPC_CHANGE_TO_MONSTER_NOTIFY = 2735;
+    CS_WANTED_MONSTER_CHANGE_TO_NPC_NOTIFY = 2736;
+
+    //接取酒楼任务
+    CS_ACCEPT_BOITE_TASK_REQ = 2737;
+    CS_ACCEPT_BOITE_TASK_RES = 2738;
+    //求助
+    CS_BOITE_TASK_ASK_HELP_REQ = 2739;
+    CS_BOITE_TASK_ASK_HELP_RES = 2740;
+    //帮助
+    CS_BOITE_TASK_HELP_REQ = 2741;
+    CS_BOITE_TASK_HELP_RES = 2742;
+    //完成酒楼任务
+    CS_COMPLETE_BOITE_TASK_REQ = 2743;
+    CS_COMPLETE_BOITE_TASK_RES = 2744;
+    //上交物品
+    CS_COMIT_ITEM_REQ = 2745;
+    CS_COMIT_ITEM_RES = 2746;
+    //酒楼任务信息查询
+    CS_BOITE_TASK_INFO_REQ = 2747;
+    CS_BOITE_TASK_INFO_RES = 2748;
+    //求助信息查询
+    CS_BOITE_TASK_HELP_INFO_REQ = 2749;
+    CS_BOITE_TASK_HELP_INFO_RES = 2750;
+
+    //通知通缉目标消失
+    CS_WANTED_TARGET_INFO_NOTIFY = 2751;
+
+    //帮会红包通知
+    CS_FAC_REDPACKET_NOTIFY = 2752;
+    //帮会红包领取
+    CS_FAC_REDPACKET_DRAW_REQ = 2753;
+    CS_FAC_REDPACKET_DRAW_RES = 2754;
+    //拉取帮会红包列表
+    CS_GET_FAC_REDPACKET_LIST_REQ = 2755;
+    CS_GET_FAC_REDPACKET_LIST_RES = 2756;
+
+
+    // 使用 cdkey
+    CS_USE_CDKEY_REQ = 2757;
+    CS_USE_CDKEY_RES = 2758;
+
+    // 玩家发放红包请求
+    CS_FAC_REDPACKET_HANDOUT_REQ  = 2759;
+    CS_FAC_REDPACKET_HANDOUT_RES  = 2760;
+    //模块开启锁通知
+    CS_MODULE_LOCK_NOTIFY = 2761;
+    //显示叹号
+    CS_WANTED_TANHAO_NOTIFY = 2762;
+
+    //调查问卷
+    CS_QUESTIONAIRE_REQ = 2763;
+    CS_QUESTIONAIRE_RES = 2764;
+
+    //非正常移动坐标同步
+    CS_SYN_POSITION_REQ = 2765;
+    CS_SYN_POSITION_RES = 2766;
+
+    CS_FAC_REDPACKET_DETAIL_REQ = 2767;
+    CS_FAC_REDPACKET_DETAIL_RES = 2768;
+
+    CS_WORLD_REDPACKET_DRAW_REQ = 2769;
+    CS_WORLD_REDPACKET_DRAW_RES = 2770;
+
+    CS_ACTIVITY_BUYBACK_INFO_REQ = 2771;
+    CS_ACTIVITY_BUYBACK_INFO_RES = 2772;
+
+    CS_ACTIVITY_BUYBACK_REQ = 2773;
+    CS_ACTIVITY_BUYBACK_RES = 2774;
+
+    // 塔防守护副本
+    CS_GUARD_ENTER_NOTIFY = 2775;
+    CS_GUARD_SELECT_NPC_REQ = 2776;
+    CS_GUARD_SELECT_NPC_RES = 2777;
+    CS_GUARD_BASE_INFO_NOTIFY = 2778;
+
+    // 即将开始
+    CS_ACT_COMMING_SOON_NOTIFY = 2779;
+
+    //宝箱系统
+    CS_PICK_TREASURE_IN_BOX_REQ = 2780;
+    CS_PICK_TREASURE_IN_BOX_RES = 2781;
+
+    //一键换装
+
+    CS_PLAYER_MULTI_TAKE_ON_REQ = 2782;
+    CS_PLAYER_MULTI_TAKE_ON_RES = 2783;
+
+    // 江湖试炼已通关奖励查询
+    CS_JH_GET_AWARD_INFO_REQ = 2784;
+    CS_JH_GET_AWARD_INFO_RES = 2785;
+
+	//角色请求进去游戏
+	CS_PLAYER_ENTER_GAME_REQ = 2786;
+	CS_PLAYER_ENTER_GAME_RES = 2787;
+
+    // 请求更新演武场(体力值，恢复剩余时间)
+    CS_HUMANMAC_REFRESH_TM_REQ = 2788;
+    CS_HUMANMAC_REFRESH_TM_RES = 2789;
+
+	//服务器强制玩家复活
+	CS_FORCE_PLAYER_REVIVE_NOTIFY = 2790;
+
+	//更新服务器列表信息
+	CS_UPDATE_SERVER_LIST_REQ = 2791;
+	CS_UPDATE_SERVER_LIST_RES = 2792;
+
+    //通知客户端怒气技能刷新
+    CS_WEAPON_ANGER_SKILL_BUTTON_NOTIFY = 2793;
+
+	//拍卖行新添加道具 客户端提示
+	CS_AUCTION_ADD_ITEM_NOTIFY = 2794;
+
+    // 武器竞技冠军投影信息
+    CS_WPFIGHT_CHAMPION_INFO_NOTIFY = 2795;
+
+    // 多人副本怪物波数信息
+    CS_ROOM_MONSTER_FLOCK_NOTIFY = 2796;
+
+    // 帮会铁匠铺打造
+    CS_FACTION_SMITHING_EQUIP_REQ = 2797;
+    CS_FACTION_SMITHING_EQUIP_RES = 2798;
+
+    //等级开放活动
+    CS_LEVEL_ACTIVITY_NOTIFY = 2799;
+
+    CS_ACT_COLLECT_EXCHANGE_REQ = 2800;
+    CS_ACT_COLLECT_EXCHANGE_RES = 2801;
+
+    CS_ACT_COLLECT_GET_AWARD_REQ = 2802;
+    CS_ACT_COLLECT_GET_AWARD_RES = 2803;
+
+    CS_ACT_EXCHANGE_AWARD_REQ = 2804;
+    CS_ACT_EXCHANGE_AWARD_RES = 2805;
+
+    CS_GET_SERVER_OPEN_DAY_REQ = 2806;
+    CS_GET_SERVER_OPEN_DAY_RES = 2807;
+
+    CS_GET_LEVEL_ACTIVITY_REQ = 2808;
+    CS_GET_LEVEL_ACTIVITY_RES = 2809;
+
+    CS_FAC_REDPACKET_BRIEF_REQ = 2810;
+    CS_FAC_REDPACKET_BRIEF_RES = 2811;
+
+
+    CS_EQUIP_SWITCH_ATTR_REQ = 2812;
+    CS_EQUIP_SWITCH_ATTR_RES = 2813;
+
+    //神兽召唤--查询
+    CS_QUERY_RARE_MONSTER_SUMMON_REQ = 2814;
+    CS_QUERY_RARE_MONSTER_SUMMON_RES = 2815;
+
+    //神兽召唤--召唤
+    CS_SUMMO_RARE_MONSTER_SUMMON_REQ = 2816;
+    CS_SUMMO_RARE_MONSTER_SUMMON_RES = 2817;
+
+    //查询拥有神兽
+    CS_BEAST_INFO_REQ = 2818;
+    CS_BEAST_INFO_RES = 2819;
+    //神兽上阵信息
+    CS_BEAST_BATTLE_INFO_REQ = 2820;
+    CS_BEAST_BATTLE_INFO_RES = 2821;
+    //上阵神兽
+    CS_BEAST_BATTLE_REQ = 2822;
+    CS_BEAST_BATTLE_RES = 2823;
+    //提升属性
+    CS_BEAST_UP_PROPERTY_REQ = 2824;
+    CS_BEAST_UP_PROPERTY_RES = 2825;
+    //突破
+    CS_BEAST_BREAK_REQ = 2826;
+    CS_BEAST_BREAK_RES = 2827;
+    //洗髓
+    CS_BEAST_RESET_PROPERTY_REQ = 2828;
+    CS_BEAST_RESET_PROPERTY_RES = 2829;
+    //保存洗髓属性
+    CS_BEAST_SAVE_PROPERTY_REQ = 2830;
+    CS_BEAST_SAVE_PROPERTY_RES = 2831;
+    //学习技能
+    CS_BEAST_LEARN_SKILL_REQ = 2832;
+    CS_BEAST_LEARN_SKILL_RES = 2833;
+    //放生
+    CS_BEAST_RELEASED_REQ = 2834;
+    CS_BEAST_RELEASED_RES = 2835;
+    //洗髓丹召唤
+    CS_BEAST_RECALL_REQ = 2836;
+    CS_BEAST_RECALL_RES = 2837;
+    //神兽图鉴信息
+    CS_BEAST_MANUAL_REQ = 2838;
+    CS_BEAST_MANUAL_RES = 2839;
+    //查询洗髓信息
+    CS_BEAST_RESET_PROPERTY_INFO_REQ = 2840;
+    CS_BEAST_RESET_PROPERTY_INFO_RES = 2841;
+    //骑乘
+    CS_BEAST_RIDE_REQ = 2842;
+    CS_BEAST_RIDE_RES = 2843;
+
+    //个人答题
+
+    CS_GET_PERSONAL_QUESTION_INFO_REQ =  2844;
+    CS_GET_PERSONAL_QUESTION_INFO_RES =  2845;
+
+    CS_ANSWER_PERSONAL_QUESTION_REQ =  2846;
+    CS_ANSWER_PERSONAL_QUESTION_RES =  2847;
+
+    CS_GET_PERSONAL_QUESTION_COUNT_REQ = 2848;
+    CS_GET_PERSONAL_QUESTION_COUNT_RES = 2849;
+
+    //全区答题
+
+    CS_GET_GLOBAL_QUESTION_INFO_REQ = 2851;
+    CS_GET_GLOBAL_QUESTION_INFO_RES = 2852;
+    CS_SEND_QUESTION_INFO_NOTIFY = 2853;
+    CS_ANSWER_GLOBAL_QUESTION_REQ = 2854;
+    CS_ANSWER_GLOBAL_QUESTION_RES = 2855;
+
+    // 组队自动同意
+    CS_TEAM_AUTO_AGREE_REQ = 2856;
+    CS_TEAM_AUTO_AGREE_RES = 2857;
+
+    // 队员召回
+    CS_TEAM_MEMBER_RECALL_REQ = 2858;
+    CS_TEAM_MEMBER_RECALL_RES = 2859;
+
+    // 取消队员召回
+    CS_TEAM_CANCEL_MEMBER_RECALL_REQ = 2860;
+    CS_TEAM_CANCEL_MEMBER_RECALL_RES = 2861;
+
+    // 召回通知（召回或者取消）
+    CS_TEAM_MEMBER_RECALL_NOTIFY = 2862;
+
+    // 队员确认是否同意召回
+    CS_TEAM_MEMBER_AGREE_RECALL_REQ = 2863;
+    CS_TEAM_MEMBER_AGREE_RECALL_RES = 2864;
+
+    // 跟随战斗
+    CS_TEAM_FOLLOW_FIGHT_REQ = 2865;
+    CS_TEAM_FOLLOW_FIGHT_RES = 2866;
+
+    // 传送前往
+    CS_TEAM_TRANSMIT_REQ = 2867;
+    CS_TEAM_TRANSMIT_RES = 2868;
+
+    //元宝商城查询商店
+    CS_QUERY_GOLD_SHOP_INFO_REQ =  2869;
+    CS_QUERY_GOLD_SHOP_INFO_RES =  2870;
+
+    //元宝商城查询商品
+    CS_QUERY_GOLD_SHOP_GOODS_INFO_REQ =  2871;
+    CS_QUERY_GOLD_SHOP_GOODS_INFO_RES =  2872;
+
+    //元宝商城购买商品
+    CS_BUY_GOLD_SHOP_GOODS_INFO_REQ =  2873;
+    CS_BUY_GOLD_SHOP_GOODS_INFO_RES =  2874;
+
+    // 历代名将进入请求
+    CS_LDMJ_ENTER_REQ = 2875;
+    CS_LDMJ_ENTER_RES = 2876;
+
+    // 历代名将信息请求
+    CS_LDMJ_INFO_REQ = 2877;
+    CS_LDMJ_INFO_RES = 2878;
+
+    // 历代名将排行榜消息下发
+    CS_LDMJ_RANK_INFO_NOTIFY = 2879;
+
+    //日常答题更新
+    CS_RESET_PERSONAL_QUESTION_NOTIFY = 2880;
+
+    //藏宝图使用
+    CS_USE_TREASURE_MAP_REQ = 2881;
+    CS_USE_TREASURE_MAP_RES = 2882;
+
+    //藏宝图挖宝
+    CS_DIG_TREASURE_MAP_REQ = 2883;
+    CS_DIG_TREASURE_MAP_RES = 2884;
+
+    //藏宝图收藏家查询
+    CS_QUERY_TREASURE_MAP_COLLECTOR_REQ = 2885;
+    CS_QUERY_TREASURE_MAP_COLLECTOR_RES = 2886;
+
+    //藏宝图收藏家交换
+    CS_EXCHANGE_TREASURE_MAP_COLLECTOR_REQ = 2887;
+    CS_EXCHANGE_TREASURE_MAP_COLLECTOR_RES = 2888;
+
+    //藏宝图良心商店查询
+    CS_QUERY_TREASURE_MAP_SHOP_REQ = 2889;
+    CS_QUERY_TREASURE_MAP_SHOP_RES = 2890;
+
+    //藏宝图良心商店购买
+    CS_BUY_TREASURE_MAP_SHOP_REQ = 2891;
+    CS_BUY_TREASURE_MAP_SHOP_RES = 2892;
+
+
+    //全服答题离开活动
+    CS_EXIT_GLOBAL_QUESTION_REQ = 2893;
+    CS_EXIT_GLOBAL_QUESTION_RES = 2894;
+
+    // 进入修炼禁地
+    CS_XLJD_ENTER_REQ = 2895;
+    CS_XLJD_ENTER_RES = 2896;
+
+
+    //藏宝图良心商店关闭
+    CS_CLOSE_TREASURE_MAP_SHOP_REQ = 2897;
+    CS_CLOSE_TREASURE_MAP_SHOP_RES = 2898;
+
+    //通知酒楼任务接取状况
+    CS_BOITE_TASK_STATUE_NOTIFY = 2899;
+
+    //放弃酒楼任务
+    CS_BOITE_TASK_GIVE_UP_REQ = 2900;
+    CS_BOITE_TASK_GIVE_UP_RES = 2901;
+
+    // 队伍加入队伍通知
+    CS_TEAM_MEMBER_JOIN_NOTIFY = 2902;
+
+    //元宝商城查询全部商品
+    CS_QUERY_GOLD_SHOP_All_GOODS_INFO_REQ =  2903;
+    CS_QUERY_GOLD_SHOP_All_GOODS_INFO_RES =  2904;
+
+    //登陆送大礼
+    CS_QUERY_EVERY_DAY_LOGIN_NOTIFY  = 2905;
+    CS_GET_EVERY_DAY_LOGIN_REWARD_REQ = 2906;
+    CS_GET_EVERY_DAY_LOGIN_REWARD_RES = 2907;
+
+    //历代名将（七宗罪）状态通知
+    CS_LDMJ_STATE_NOTIFY = 2908;
+
+
+    //藏宝图净化村长 进入副本 client<->zone
+    CS_ENTRY_TREASURE_MAP_PURIFY_LEADER_REQ = 2909;
+    CS_ENTRY_TREASURE_MAP_PURIFY_LEADER_RES = 2910;
+
+    //藏宝图净化村长 触发许愿事件 room->client
+    CS_HAPPEN_TREASURE_MAP_PURIFY_LEADER_NOTIFY = 2911;
+
+    //藏宝图净化村长 采集进度通知 room->client
+    CS_COLLECT_TREASURE_MAP_PURIFY_LEADER_NOTIFY = 2912;
+
+    //藏宝图净化村长 愿望查询 client<->online
+    CS_QUERY_TREASURE_MAP_PURIFY_LEADER_REQ = 2913;
+    CS_QUERY_TREASURE_MAP_PURIFY_LEADER_RES = 2914;
+
+
+    //藏宝图净化村长 愿望许愿 client<->online
+    CS_WISH_TREASURE_MAP_PURIFY_LEADER_REQ = 2915;
+    CS_WISH_TREASURE_MAP_PURIFY_LEADER_RES = 2916;
+
+    //皇城之战通知人数不够
+    CS_WAR_OF_ROYAL_CITY_PLAYER_NOT_ENOUGH_NOTIFY = 2917;
+
+    // 武器竞技等待阶段准备人数通知
+    CS_WPFIGHT_READYNUM_NOTIFY = 2918;
+    // 武器竞技 活动未开始时上次决赛对阵信息
+    CS_WPFIGHT_LAST_FINALFIGHT_REQ = 2919;
+    CS_WPFIGHT_LAST_FINALFIGHT_RES = 2920;
+
+    CS_AUTH_BINLING_TOKEN_REQ = 2921;
+    CS_AUTH_BINLING_TOKEN_RES = 2922;
+
+	//新天幕禁地报名
+	CS_SKYFALL_SIGN_REQ = 2923;
+    CS_SKYFALL_SIGN_RES = 2924;
+
+	//天幕禁地请求排行棒数据
+	CS_SKYFALL_SCORE_RANK_REQ = 2925;
+	CS_SKYFALL_SCORE_RANK_RES = 2926;
+
+	//选中间谍
+	CS_SKYFALL_CHOOSE_SPY_REQ = 2927;
+	CS_SKYFALL_CHOOSE_SPY_RES = 2928;
+
+	//结果通知
+	CS_SKYFALL_RESULT_NOTIFY = 2929;
+	//通知副本阶段
+	CS_SKYFALL_STAGE_NOTIFY = 2930;
+
+	//自动学习技能通知
+	CS_AUTO_LEARN_SKILL_NOTIFY = 2931;
+
+
+    //藏宝图净化村长 开始采集 client<->online
+    CS_START_TREASURE_MAP_PURIFY_LEADER_REQ = 2937;
+    CS_START_TREASURE_MAP_PURIFY_LEADER_RES = 2938;
+
+    //神兽信息推送
+    CS_BEAST_INFO_NOTIFY = 2939;
+
+    //头衔提升
+    CS_UPDATE_HONOR_REQ = 2940;
+    CS_UPDATE_HONOR_RES = 2941;
+
+
+    //每日在线奖励查询
+    CS_QUERY_DAILY_ONLINE_GIFT_REQ = 2942;
+    CS_QUERY_DAILY_ONLINE_GIFT_RES = 2943;
+
+    //每日在线奖励领取
+    CS_RECEIVE_DAILY_ONLINE_GIFT_REQ = 2944;
+    CS_RECEIVE_DAILY_ONLINE_GIFT_RES = 2945;
+
+    //每日在线奖励可领取通知
+    CS_DAILY_ONLINE_GIFT_NOTIFY = 2946;
+
+    //战力礼包查询
+    CS_QUERY_FIGHTING_GIFT_REQ = 2947;
+    CS_QUERY_FIGHTING_GIFT_RES = 2948;
+
+    //战力礼包领取
+    CS_RECEIVE_FIGHTING_GIFT_REQ = 2949;
+    CS_RECEIVE_FIGHTING_GIFT_RES = 2950;
+
+    //战力礼包可领取通知
+    CS_FIGHTING_GIFT_NOTIFY = 2951;
+
+    //世界红包通知
+    CS_WORLD_RED_PACKET_NOTIFY = 2952;
+
+    //世界红包领取
+    CS_GET_WORLD_RED_PACKET_REQ = 2953;
+    CS_GET_WORLD_RED_PACKET_RES = 2954;
+
+	//装备强化突破
+	CS_POSITION_STRENGTHEN_BREAK_REQ = 2955;
+	CS_POSITION_STRENGTHEN_BREAK_RES = 2956;
+
+    //同步游侠积分
+	CS_WAR_OF_ROYAL_CITY_RANGER_SCORE_NOTIFY = 2957;
+
+    //换装通知
+    CS_CHANGE_FACE_NOTIFY = 2958;
+
+	//酒楼任务信息通知
+	CS_BOITE_TASK_INFO_NOTIFY = 2959;
+
+	//皇城之战怪物刷新通知
+	CS_WAR_OF_ROYAL_CITY_REFRESH_NOTIFY = 2960;
+
+	//击杀
+	CS_WAR_OF_ROYAL_CITY_KILL_NOTIFY = 2961;
+
+	//直接伤害冒血
+	CS_DIRECT_DAMAGE_NOTIFY = 2962;
+
+    //任务人物加速
+    CS_TASK_SPEED_CHANGE_REQ = 2963;
+    CS_TASK_SPEED_CHANGE_RES = 2964;
+
+    // 采集怪物相关数据更新
+    CS_PICK_MONSTER_REFRESH_NOTIFY = 2965;
+	//拍卖行通知分红变化
+	CS_AUCTION_FACTION_BONUS_NOTIFY = 2966;
+
+    // 通知客户端修炼珠剩余时间
+    CS_YEWAI_TRAIN_LEFT_TIME_NOTIFY = 2967;
+
+    //组队 队员不同意召回通知
+    CS_TEAM_MEMBER_NOT_AGREE_RECALL_NOTIFY = 2968;
+
+    //玩家换头像请求
+    CS_CHANGE_PLAYER_ICON_REQ = 2969;
+
+    CS_CHANGE_PLAYER_ICON_RES = 2970;
+
+    //begin 帮会运镖
+    //NPC对话
+    CS_TALK_TO_NPC_REQ = 2971;
+    CS_TALK_TO_NPC_RES = 2972;
+
+    //激活镖车
+    CS_ACTIVATE_CAR_REQ = 2973;
+    CS_ACTIVATE_CAR_RES = 2974;
+
+    //升级镖车
+    CS_UPDATE_CAR_REQ = 2975;
+    CS_UPDATE_CAR_RES = 2976;
+
+    //开始押镖
+    CS_START_ESCORT_CAR_REQ = 2977;
+    CS_START_ESCORT_CAR_RES = 2978;
+
+    CS_START_ESCORT_CAR_NOTIFY = 2979;
+    //end 帮会运镖
+
+    //十连抽打折信息
+    CS_DISCOUNT_SUMMON_NOTIFY = 2980;
+
+    //vip礼包购买
+    CS_BUY_VIP_GIFT_REQ = 2981;
+    CS_BUY_VIP_GIFT_RES = 2982;
+    //编辑帮会邮件
+    CS_EDIT_EMAIL_REQ = 2983;
+    CS_EDIT_EMAIL_RES = 2984;
+    //清空帮会申请列表
+    CS_CLEAR_FACTION_APPLY_LIST_REQ = 2985;
+    CS_CLEAR_FACTION_APPLY_LIST_RES = 2986;
+
+
+    //查询当前十倍经验状态
+    CS_TEN_TIMES_EXP_REQ = 2987;
+    CS_TEN_TIMES_EXP_RES = 2988;
+
+    //同步封印等级
+    CS_LIMIT_LEVEL_NOTIFY = 2989;
+
+    //宴会喝酒
+    CS_MEET_DRINK_REQ = 2990;
+    CS_MEET_DRINK_RES = 2991;
+
+    //通知答题
+    CS_MEET_ANSWER_NOTIFY = 2992;
+
+    //玩家答题选择
+    CS_MEET_CHOOSE_ANSWER_REQ = 2993;
+    CS_MEET_CHOOSE_ANSWER_RES = 2994;
+
+    //请求宴会题目
+    CS_MEET_ANSWER_REQ = 2995;
+    CS_MEET_ANSWER_RES = 2996;
+
+    //添加好友通知
+    CS_ADD_FRIEND_NOTIFY = 2997;
+    //同意添加好友请求
+    CS_AGREE_ADD_FRIEND_REQ = 2998;
+    CS_AGREE_ADD_FRIEND_RES = 2999;
+
+    //同意添加好友通知
+    CS_AGREE_ADD_FRIEND_NOTIFY = 3000;
+    //删除好友通知
+    CS_DEL_FRIEND_NOTIFY  = 3001;
+
+    //昵称改变
+    CS_CHANGE_ALIAS_REQ = 3002;
+    CS_CHANGE_ALIAS_RES = 3003;
+
+    //送花
+    CS_SEND_FLOWER_REQ = 3004;
+    CS_SEND_FLOWER_RES = 3005;
+
+    //增加亲密度
+    CS_ADD_RELATION_RATE_NOTIFY = 3006;
+
+    //多人副本得分刷新
+    CS_MULTILEVEL_UPDATE_MARK_REQ = 3007;
+    CS_MULTILEVEL_UPDATE_MARK_RES = 3008;
+
+    //多人副本关闭结算窗口（保存结算结果，发放奖励）
+    CS_MULTILEVEL_CLOSE_ACCOUNT_PAGE_REQ = 3009;
+    CS_MULTILEVEL_CLOSE_ACCOUNT_PAGE_RES = 3010;
+
+    //根据名字直接添加在线玩家为好友
+    CS_ADD_FRIEND_BY_NAME_REQ    = 3011;
+    CS_ADD_FRIEND_BY_NAME_RES    = 3012;
+
+    CS_BROADCAST_SEND_FLOWER_NOTIFY = 3013;
+
+    //通知不在皇城开放时间
+    CS_NOT_IN_OPEN_TIME_NOTIFY = 3014;
+ 	//主播送礼
+	CS_SEND_ANCHOR_GIFT_REQ = 3015;
+	CS_SEND_ANCHOR_GIFT_RES = 3016;
+
+	//关注主播
+	CS_ADD_ATTENTION_REQ = 3017;
+	CS_ADD_ATTENTION_RES = 3018;
+
+	//取消关注
+	CS_CANCEL_ATTENTION_REQ = 3019;
+	CS_CANCEL_ATTENTION_RES = 3020;
+
+	//查询主播列表
+	CS_ASK_ATTENTION_LIST_REQ = 3021;
+	CS_ASK_ATTENTION_LIST_RES = 3022;
+
+
+    //庄周报数
+    CS_ZHUANGZHOU_COUNT_OFF_REQ = 3023;
+    CS_ZHUANGZHOU_COUNT_OFF_RES = 3024;
+
+
+    //副本埋点
+    CS_SUB_CARBON_REQ = 3025;
+    CS_SUB_CARBON_RES = 3026;
+
+	//活动结束通知
+	CS_ACTIVE_STOP_NOTIFY = 3027;
+
+	//聊天答题
+	CS_CHAT_FACTION_QUESTION_REQ = 3028;
+	CS_CHAT_FACTION_QUESTION_RES = 3029;
+
+		//队伍邀请，查询可邀请玩家
+		CS_QUERY_INVITE_REQ = 3030;
+		CS_QUERY_INVITE_RES = 3031;
+
+    //查询附近队伍信息
+    CS_GET_NEARBY_TEAMS_INFO_REQ = 3032;
+    CS_GET_NEARBY_TEAMS_INFO_RES = 3033;
+
+    //帮会押镖结束通知
+    CS_END_ESCORT_CAR_NOTIFY = 3034;
+    //自动匹配队伍请求
+    CS_AUTO_MATCH_TEAM_REQ = 3035;
+    CS_AUTO_MATCH_TEAM_RES = 3036;
+    //自动匹配状态通知
+    CS_AUTO_MATCH_TEAM_STATE_NOTIFY = 3037;
+   //帮会争霸活动
+    CS_FACTION_COMPETE_REQ = 3038;
+    CS_FACTION_COMPETE_RES = 3039;
+
+    //跨天通知
+    CS_DAY_PASS_NOTIFY = 3040;
+
+    //庄周击杀通知
+    CS_KILL_PLAYER_NOTIFY = 3041;
+    //庄周击杀统计通知
+    CS_STATISTICS_NOTIFY = 3042;
+
+    //庄周击杀统计查询
+    CS_STATISTICS_REQ = 3043;
+    CS_STATISTICS_RES = 3044;
+
+    //客户端日志记录
+    CS_CLIENT_LOG_REQ = 3045;
+    CS_CLIENT_LOG_RES = 3046;
+
+	//成就积分等级奖励
+	CS_GET_ACHIEVE_LEVEL_AWARD_REQ = 3047;
+	CS_GET_ACHIEVE_LEVEL_AWARD_RES = 3048;
+
+    //取消自动匹配
+    CS_CANCEL_AUTO_MATCH_REQ = 3049;
+    CS_CANCEL_AUTO_MATCH_RES = 3050;
+
+    //帮会争霸领取奖励
+    CS_FACTION_COMPETE_GET_DAILY_REWARD_REQ = 3051;
+    CS_FACTION_COMPETE_GET_DAILY_REWARD_RES = 3052;
+
+    //聊天发送失败恢复频道次数
+    CS_CHAT_FAIL_RECOVERY_SPEAK_TIMES_REQ = 3053;
+    CS_CHAT_FAIL_RECOVERY_SPEAK_TIMES_RES = 3054;
+
+	//亲密度增加
+	CS_FRIEND_FRIENDSHIP_RAISE_NOTIFY = 3055;
+
+    //好友组队亲密度的经验加成
+    CS_TEAM_FRIENDSHIP_EXP_ADD_NOTIFY = 3056;
+
+
+    //一本万利活动-已领取奖励信息
+    CS_GET_BIG_PROFIT_RECEIVE_INFO_REQ = 3057;
+    CS_GET_BIG_PROFIT_RECEIVE_INFO_RES = 3058;
+
+    //一本万利活动-获取奖励
+    CS_GET_BIG_PROFIT_REWARD_REQ = 3059;
+    CS_GET_BIG_PROFIT_REWARD_RES = 3060;
+
+    //查询每日礼包信息
+    CS_QUERY_INEXPENSIVE_GIFT_PACKETS_REQ = 3061;
+    CS_QUERY_INEXPENSIVE_GIFT_PACKETS_RES = 3062;
+
+    //购买每日礼包
+    //CS_BUY_INEXPENSIVE_GIFT_PACKETS_REQ = 3063;
+    //CS_BUY_INEXPENSIVE_GIFT_PACKETS_RES = 3064;
+    //购买成功通知客户端的协议【通用协议】
+    GOLD_BUY_PACKETS_SUCCESS_NOTIFY = 3063;
+    //零点刷新通知客户端刷新的协议
+    ZERO_FRESH_DATA_NOTIFY = 3064;
+
+    //领取已购买的每日礼包
+    CS_RECEIVE_INEXPENSIVE_GIFT_PACKETS_REQ = 3065;
+    CS_RECEIVE_INEXPENSIVE_GIFT_PACKETS_RES = 3066;
+
+	//轮回榜信息
+	CS_GET_LUNHUI_HONOR_RANK_REQ = 3067;
+	CS_GET_LUNHUI_HONOR_RANK_RES = 3068;
+
+	//天幕禁地 - 阶段积分通知
+	CS_SKYFALL_STAGE_SCORE_NOTIFY = 3069;
+
+	//运营活动等级冲榜
+	CS_GET_OPERATERANK_LEVEL_REQ = 3070;
+	CS_GET_OPERATERANK_LEVEL_RES = 3071;
+
+
+	//新登录大礼包
+	CS_EVERY_DAY_LOGIN_INFO_REQ = 3072;
+	CS_EVERY_DAY_LOGIN_INFO_RES = 3073;
+
+	//天幕禁地 - 通知buff信息
+	CS_SKYFALL_BUFF_INFO_NOTIFY = 3074;
+	//天幕禁地 - 购买buff
+	CS_SKYFALL_BUY_BUFF_REQ = 3075;
+	CS_SKYFALL_BUY_BUFF_RES = 3076;
+
+     //一本万利活动-获取购买信息
+     CS_GET_BIG_PROFIT_RECHARGE_INFO_REQ = 3077;
+     CS_GET_BIG_PROFIT_RECHARGE_INFO_RES = 3078;
+
+     //一本万利活动-购买
+     CS_BUY_BIG_PROFIT_REQ = 3079;
+     CS_BUY_BIG_PROFIT_RES = 3080;
+
+	 //首刀通知
+	 //CS_FIRST_ATTACK_NOTIFY = 3081;
+     //更新人满自动进入副本设置请求
+     CS_TEAM_UPDATE_AUTO_ENTER_REQ = 3081;
+     CS_TEAM_UPDATE_AUTO_ENTER_RES = 3082;
+
+
+     // 最大的客户端命令字，所有的命令字不能超过这个值
+     //协助邀请请求
+     CS_TEAM_ASSIST_REQ = 3083;
+     CS_TEAM_ASSIST_RES = 3084;
+
+     //协助邀请通知
+     CS_TEAM_ASSIST_NOTIFY = 3085;
+
+     //队友推荐请求
+     CS_TEAM_RECOMMEND_REQ = 3086;
+     CS_TEAM_RECOMMEND_RES = 3087;
+
+	 //主界面上飘通知
+	 CS_MAIN_WINDOW_FLOW_NOTIFY = 3088;
+
+     //首冲大礼包信息
+     CS_FIRST_PAY_INFO_REQ = 3089;
+     CS_FIRST_PAY_INFO_RES = 3090;
+
+     CS_FIRST_PAY_INFO_NOTIFY = 3091;
+
+     //获取首冲大礼包
+     CS_GET_FIRST_PAY_GIFT_REQ = 3092;
+     CS_GET_FIRST_PAY_GIFT_RES = 3093;
+
+
+     //邀请别人加入帮会
+     CS_INVITE_TO_FACTION_REQ = 3094;
+     CS_INVITE_TO_FACTION_RES = 3095;
+     //通知客户端运营活动开启
+     CS_OPERATE_ACT_START_NOTIFY = 3096;
+
+     //装备强化/镶嵌宝石 公共激活协议
+     CS_ACHIEVE_ACTOR_ATTR_REQ = 3097;
+     CS_ACHIEVE_ACTOR_ATTR_RES = 3098;
+
+     //限时购买活动--获取活动参与状态
+     CS_TIME_LIMIT_PACKAGE_GET_STATE_REQ = 3099;
+     CS_TIME_LIMIT_PACKAGE_GET_STATE_RES = 3100;
+
+     //限时购买活动--购买
+     CS_TIME_LIMIT_PACKAGE_BUY_REQ = 3101;
+     CS_TIME_LIMIT_PACKAGE_BUY_RES = 3102;
+
+     //限时购买活动--推荐购买
+     CS_TIME_LIMIT_PACKAGE_RECOMMEND_BUY_NOTIFY = 3103;
+
+     //同步对应选择状态
+     CS_SYN_TEAM_MEMBER_CHOOSE_NOTIFY = 3104;
+
+
+     //查看附近没有队伍的玩家
+     CS_GET_NEAR_NOTIN_TEAM_REQ = 3105;
+     CS_GET_NEAR_NOTIN_TEAM_RES = 3106;
+
+	 //天墓禁地 - 成就完成特效通知
+	 CS_SKYFALL_CHALLENGE_FINISH_NOTIFY = 3107;
+
+	 //天墓禁地	- 地图内公告通知
+	 CS_SKYFALL_NOTICE_NOTIFY = 3108;
+	 //限定神兽活动面板
+	 CS_GET_LIMITEDANIMAL_INFO_REQ = 3109;
+	 CS_GET_LIMITEDANIMAL_INFO_RES = 3110;
+
+	 //领取限定神兽
+	 CS_GET_LIMITEDANIMAL_REQ = 3111;
+	 CS_GET_LIMITEDANIMAL_RES = 3112;
+
+
+     // 充值检查请求
+     CS_BUY_CHECK_RMB_REQ = 3113;
+     CS_BUY_CHECK_RMB_RES = 3114;
+
+     // 获取计费点信息
+     CS_RECHARGE_POINT_REQ = 3115;
+     CS_RECHARGE_POINT_RES = 3116;
+
+     //vip礼包购买信息
+     CS_VIP_GIFT_NOTIFY = 3117;
+
+     //聊天前后缀ID列表通知（上线和被动改变的时候）
+     CS_CHAT_PRE_AND_SUF_ID_LIST_NOTIFY = 3118;
+
+     //玩家主动改变聊天前后缀ID
+     CS_CHANGE_CHAT_PRE_AND_SUF_ID_REQ = 3119;
+     CS_CHANGE_CHAT_PRE_AND_SUF_ID_RES = 3120;
+
+     //[周（1）|月（2）]卡[购买|续约]请求
+     //CS_BUY_WEEK_OR_MONTH_CARD_REQ = 3121;
+     //CS_BUY_WEEK_OR_MONTH_CARD_RES = 3122;
+
+     //周卡（1）、月卡（2）状态查询请求
+     CS_INQUIRY_WEEK_AND_MONTH_CARD_INFO_REQ = 3123;
+     CS_INQUIRY_WEEK_AND_MONTH_CARD_INFO_RES = 3124;
+
+     //[周（1）|月（2）]卡物品领取请求
+     CS_RECEIVE_WEEK_OR_MONTH_CARD_AWARD_REQ = 3125;
+     CS_RECEIVE_WEEK_OR_MONTH_CARD_AWARD_RES = 3126;
+
+     //全身橙装奖励领取协议
+     CS_RECEIVE_SUIT_AWARD_REQ = 3127;
+     CS_RECEIVE_SUIT_AWARD_RES = 3128;
+
+     CS_EQUIP_REWARD_ADD_NOTIFY = 3129;
+
+     //取消帮会建筑小红点
+     CS_CANCEL_FAC_BUILD_RED_POINT_REQ = 3130;
+     CS_CANCEL_FAC_BUILD_RED_POINT_RES = 3131;
+
+     //查看玩家是否有队伍
+     CS_QUERY_PLAYER_TEAM_REQ = 3132;
+     CS_QUERY_PLAYER_TEAM_RES = 3133;
+
+	 //改名
+	 CS_CHANGE_NAME_REQ = 3134;
+	 CS_CHANGE_NAME_RES = 3135;
+
+     //查询经验加成
+     CS_QUERY_EXP_ADD_REQ = 3136;
+     CS_QUERY_EXP_ADD_RES = 3137;
+
+     //取消聊天前后缀ID
+     CS_CANCEL_CHAT_PRE_AND_SUF_ID_REQ = 3138;
+     CS_CANCEL_CHAT_PRE_AND_SUF_ID_RES = 3139;
+
+	 //助攻通知
+	 CS_ASSIST_KILL_NOTIFY = 3140;
+	 //击杀通知
+	 CS_KILL_ASSIST_TIPS_NOTIFY = 3141;
+
+     // 首充翻倍数据通知
+     CS_DOUBLE_DATA_NOTIFY = 3142;
+
+	 //天幕禁地 - 点名功能
+	 CS_SKY_FALL_ASSEMBLE_REQ = 3143;
+	 CS_SKY_FALL_ASSEMBLE_RES = 3144;
+
+	 //打坐请求
+	 CS_PLAYER_SIT_REQ = 3145;
+	 CS_PLAYER_SIT_RES = 3146;
+	 //打坐通知给视野内的玩家
+	 CS_PLAYER_SIT_NOTIFY = 3147;
+
+     //通知客户端活动数据变化
+     CS_ACTIVITY_CHANGE_NOTIFY = 3148;
+
+
+     // 玩家简单属性变化
+     CS_SIMPLE_ATTR_CHANGE_NOTIFY = 3149;
+
+    //续费豪礼
+
+     //续豪礼信息请求
+     CS_GET_PAY_FEEDBACK_INFO_REQ = 3150;
+     CS_GET_PAY_FEEDBACK_INFO_RES = 3151;
+
+     CS_GET_PAY_FEEDBACK_INFO_NOTIFY = 3152;
+
+     //获取续费豪礼礼包
+     CS_GET_PAY_FEEDBACK_GIFT_REQ = 3153;
+     CS_GET_PAY_FEEDBACK_GIFT_RES = 3154;
+
+	 //获得每日充值面板
+	 CS_GET_EVERYDAYPAY_INFO_REQ = 3155;
+	 CS_GET_EVERYDAYPAY_INFO_RES = 3156;
+
+	 //领取每日充值铜钱
+	 CS_GET_EVERYDAYPAY_COPPER_REQ = 3157;
+	 CS_GET_EVERYDAYPAY_COPPER_RES = 3158;
+
+	 //领取每日充值奖励
+	 CS_GET_EVERYDAYPAY_AWARD_REQ = 3159;
+	 CS_GET_EVERYDAYPAY_AWARD_RES = 3160;
+
+
+     //开服累计消费达成成就领取
+     CS_RECEIVE_TOTAL_CONSUMPTION_REWARD_REQ = 3161;
+     CS_RECEIVE_TOTAL_CONSUMPTION_REWARD_RES = 3162;
+
+     //开服累计消费变化通知
+     CS_TOTAL_CONSUMPTION_CHANGE_NOTIFY = 3163;
+
+     //开服累计消费查询
+     CS_QUERY_TOTAL_CONSUMPTION_DATA_REQ = 3164;
+     CS_QUERY_TOTAL_CONSUMPTION_DATA_RES = 3165;
+	 //主动刷新每日充值面板
+	 CS_GET_EVERYDAYPAY_INFO_REQ_NOTIFY = 3166;
+
+     //查询传功剩余冷却时间
+     CS_QUERY_TRAIN_LEFT_COOLING_TIME_REQ = 3167;
+     CS_QUERY_TRAIN_LEFT_COOLING_TIME_RES = 3168;
+
+     // 通天塔匹配信息
+     CS_TTTOWER_MATCH_NOTIFY = 3169;
+
+     //限时礼包活动购买成功通知
+     CS_TIME_LIMIT_PACKAGE_BUY_SUCCESS_NOTIFY = 3170;
+
+     //限时礼包确认已推荐
+     CS_TIMELIMIT_CONFIRM_RECOMMEND_REQ = 3171;
+     CS_TIMELIMIT_CONFIRM_RECOMMEND_RES = 3172;
+
+     //一本万活动利购买成功通知
+     CS_BUY_BIG_PROFIT_SUCCESS_NOTIFY = 3173;
+
+	 //取奖励请求
+	 CS_GET_ADD_UP_RECHARGE_AWARD_REQ = 3174;
+	 CS_GET_ADD_UP_RECHARGE_AWARD_RES = 3175;
+	 //奖励达成通知
+	 CS_ADD_UP_RECHARGE_AWARD_FINISH_NOTIFY = 3176;
+	 //获取累计付费信息请求
+	 CS_GET_ADD_UP_RECHARGE_INFO_REQ  = 3177;
+	 CS_GET_ADD_UP_RECHARGE_INFO_RES  = 3178;
+
+     // 充值成功的消息
+     CS_PAY_SUCC_NOTIFY = 3179;
+
+     //一键入帮
+     CS_DIRECT_JOIN_IN_FACTION_REQ = 3180;
+     CS_DIRECT_JOIN_IN_FACTION_RES = 3181;
+
+	 //获取运营活动战力排行榜面板信息
+	 CS_GET_OPERATERANK_FIGHTING_INFO_REQ = 3184;
+	 CS_GET_OPERATERANK_FIGHTING_INFO_RES = 3185;
+
+     // 通天塔中间副本结算
+     CS_TOWER_MID_ACCOUNT_NOTIFY = 3186;
+     // 通天塔最后一个副本结算
+     CS_TOWER_END_ACCOUNT_NOTIFY = 3187;
+
+	 //天墓禁地请求位置信息
+	 CS_SKY_FALL_SAFE_ZONE_REQ = 3188;
+	 CS_SKY_FALL_SAFE_ZONE_RES = 3189;
+
+     // 通天塔里的战斗数据同步
+     CS_TOWER_FIGHT_DATA_NOTIFY = 3190;
+	 // 天墓禁地积分通知
+	 CS_SKY_FALL_SCORE_RANK_NOTIFY = 3191;
+
+     //在线开服累计消费活动开启通知
+     CS_TOTAL_CONSUMPTION_OPEN_NOTIFY = 3192;
+
+     //主线任务答题
+     //请求任务答题信息
+     CS_GET_TASK_QUESTION_REQ = 3193;
+     CS_GET_TASK_QUESTION_RES = 3194;
+
+     //请求回答问题
+     CS_ANSWER_TASK_QUESTION_REQ = 3195;
+     CS_ANSWER_TASK_QUESTION_RES = 3196;
+
+     //召集队友
+     CS_TEAM_TOGETHER_REQ = 3197;
+     CS_TEAM_TOGETHER_RES = 3198;
+
+     //取消召集队友
+     CS_CANCEL_TEAM_TOGETHER_REQ = 3199;
+     CS_CANCEL_TEAM_TOGETHER_RES = 3200;
+
+     //召集通知
+     CS_TEAM_TOGETHER_NOTIFY = 3201;
+
+     //召集选择
+     CS_TEAM_TOGETHER_CHOOSE_REQ = 3202;
+     CS_TEAM_TOGETHER_CHOOSE_RES = 3203;
+
+     //请求队伍跟站信息
+     CS_GET_TEAM_FOLLOW_REQ = 3204;
+     CS_GET_TEAM_FOLLOW_RES = 3205;
+
+     //取消召集队友通知
+     CS_CANCEL_TEAM_TOGETHER_NOTIFY = 3206;
+
+     //使用周卡礼包时，如果没有购买周卡，通知客户端进行界面跳转
+     SHOW_WEEK_CARD_VIEW_NOTIFY = 3207;
+
+
+
+     //队员申请队长请求
+     CS_TEAM_LEADER_APPLY_REQ = 3208;
+     CS_TEAM_LEADER_APPLY_RES = 3209;
+
+     //队员申请队长通知
+     CS_TEAM_LEADER_APPLY_NOTIFY = 3210;
+
+     //队长审批申请队长请求
+     CS_TEAM_LEADER_AGREE_APPLY_REQ = 3211;
+     CS_TEAM_LEADER_AGREE_APPLY_RES = 3212;
+
+     //队长审批通知
+     CS_TEAM_LEADER_AGREE_APPLY_NOTIFY = 3213;
+
+     //查询指定商品信息
+     CS_GET_STALL_ITEM_REQ = 3214;
+     CS_GET_STALL_ITEM_RES = 3215;
+
+     //我的关注
+     CS_MY_STALL_INTEREST_REQ = 3216;
+     CS_MY_STALL_INTEREST_RES = 3217;
+
+     //跟随通知
+     CS_TEAM_FOLLOW_NOTIFY = 3218;
+
+     //刷新元宝商店通知
+     CS_FLASH_GOLD_SHOP_NOTIFY = 3219;
+     //选择通知 --通知给队长
+     CS_TEAM_TOGETHER_CHOOSE_NOTIFY = 3220;
+
+	 //申请婚礼
+	 CS_APPLY_WEDDING_REQ = 3221;
+	 CS_APPLY_WEDDING_RES = 3222;
+
+	 //同意婚礼协议
+	 CS_AGREE_WEDDING_REQ = 3223;
+	 CS_AGREE_WEDDOMG_RES = 3224;
+
+	 //选择婚礼notify
+	 CS_CHOICE_WEDDING_NOTIFY = 3225;
+
+     //计费点节点礼包请求
+     CS_GET_FESTIVAL_RECHARGE_GIFT_PACKETS_INFO_REQ = 3226;
+     CS_GET_FESTIVAL_RECHARGE_GIFT_PACKETS_INFO_RES = 3227;
+
+     //购买成功通知客户端的协议
+     BUY_GIFT_PACKETS_SUCCESS_NOTIFY = 3228;
+
+     //免费礼包领取请求
+     CS_GET_FREE_GIFT_PACKET_REQ = 3229;
+     CS_GET_FREE_GIFT_PACKET_RES = 3230;
+
+     //玩家删除邮件
+     CS_MAIL_DELETE_MAIL_REQ = 3231;
+     CS_MAIL_DELETE_MAIL_RES = 3232;
+
+     //玩家一键删除邮件的通知
+     CS_MAIL_DELETE_ALL_MAIL_REQ = 3233;
+     CS_MAIL_DELETE_ALL_MAIL_RES = 3234;
+
+	 //确认婚礼notify
+	 CS_CONFIRM_WEDDING_NOTIFY = 3235;
+
+	 //获取正在举行的婚礼列表
+	 CS_GET_WEDDING_LIST_REQ = 3236;
+	 CS_GET_WEDDING_LIST_RES = 3237;
+
+	 //申请进入婚礼
+	 CS_ENTER_WEDDING_REQ = 3238;
+	 CS_ENTER_WEDDING_RES = 3239;
+
+     //节日活动通知
+     FESTIVAL_ACTIVITY_NOTIFY = 3240;
+
+	 //登录排队
+	 LOGIN_WAIT_QUEUE_NOTIFY = 3241;
+	 //退出排队
+	 LOGIN_WAIT_QUEUE_QUIT_REQ = 3242;
+	 LOGIN_WAIT_QUEUE_QUIT_RES = 3243;
+
+	 //获取申请进入婚礼的列表
+	 CS_GET_WEDDING_APPLY_LIST_REQ = 3244;
+	 CS_GET_WEDDING_APPLY_LIST_RES = 3245;
+
+    //感谢队员协助飘字
+    THANK_FOR_HELP_NOTIFY = 3246;
+
+	 //申请神兽信息
+	 CS_GET_BEAST_INFO_REQ = 3247;
+	 CS_GET_BEAST_INFO_RES = 3248;
+	 //神兽升星
+	 CS_BEAST_UP_STAR_REQ = 3249;
+	 CS_BEAST_UP_STAR_RES = 3250;
+	 //神兽上阵
+	 CS_BEAST_BATTLE_IN_REQ = 3251;
+	 CS_BEAST_BATTLE_IN_RES = 3252;
+	 //改变阵型
+	 CS_BEAST_CHANGE_BATTLE_REQ = 3253;
+	 CS_BEAST_CHANGE_BATTLE_RES = 3254;
+	 //获得神兽通知
+	 CS_BEAST_GET_NOTIFY = 3255;
+	 //合成神兽
+	 CS_BEAST_GET_BEAST_REQ = 3256;
+	 CS_BEAST_GET_BEAST_RES = 3257;
+	 //天赋进阶
+	 CS_BEAST_GIFT_ADVANCE_REQ = 3258;
+	 CS_BEAST_GIFT_ADVANCE_RES = 3259;
+	 //天赋突破
+	 CS_BEAST_GIFT_BREAK_REQ = 3260;
+	 CS_BEAST_GIFT_BREAK_RES = 3261;
+
+     //节日免费礼包领取成功通知
+     FESTIVAL_FREE_GIFT_BAG_NOTIFY = 3262;
+     //彩聊剩余次数
+     CS_COLOR_CHAT_REMAINING_TIMES_REQ = 3263;
+     CS_COLOR_CHAT_REMAINING_TIMES_RES = 3264;
+     //选择订婚类型
+     CS_SELECT_BETROTHAL_TYPE_REQ = 3265;
+     CS_SELECT_BETROTHAL_TYPE_RES = 3266;
+     //是否同意订婚
+     CS_IS_AGREE_BETROTHAL_REQ = 3267;
+     CS_IS_AGREE_BETROTHAL_RES = 3268;
+     //通知玩家是否同意订婚
+     CS_IS_AGREE_BETROTHAL_NOTIFY = 3269;
+
+
+	 //排队系统-通知进入游戏
+	 CS_LOGIN_WAIT_ENTER_GAME_NOTIFY = 3270;
+
+	 //邀请好友或者帮会成员参加婚礼S
+	 CS_INVITE_FRIENDS_OR_FACTIONMEMBER_TO_WEDDING_REQ = 3273;
+	 CS_INVITE_FRIENDS_OR_FACTIONMEMBER_TO_WEDDING_RES= 3274;
+
+	 //宾客使用请柬
+	 CS_USE_INVITATION_CARD_REQ = 3275;
+
+	 //宾客使用请柬进入副本
+	 CS_USE_INVITATION_CARD_ENTER_ROOM_REQ = 3276;
+	 CS_USE_INVITATION_CARD_ENTER_ROOM_RES = 3277;
+
+	 //获取礼金列表
+	 CS_GET_WEDDING_GIFT_LIST_REQ = 3278;
+	 CS_GET_WEDDING_GIFT_LIST_RES = 3279;
+
+	 //婚礼送礼金
+	 CS_GIVE_GIFT_IN_WEDDING_REQ = 3280;
+	 CS_GIVE_GIFT_IN_WEDDING_RES = 3281;
+
+	 //礼金列表刷新NOTIFY
+	 CS_WEDDING_GIFT_LIST_NOTIFY = 3282;
+
+
+     //奖励领取请求
+     CS_GET_FESTIVAL_LOGIN_GIFT_BAG_REQ = 3283;
+     CS_GET_FESTIVAL_LOGIN_GIFT_BAG_RES = 3284;
+     //节日登陆活动信息请求
+     CS_GET_FESTIVAL_LOGIN_GIFT_BAG_INFO_REQ = 3285;
+     CS_GET_FESTIVAL_LOGIN_GIFT_BAG_INFO_RES = 3286;
+     //节日登陆活动开始通知
+     ACTIVITY_START_NOTIFY = 3287;
+     //节日登陆活动结束通知
+     ACTIVITY_END_NOTIFY = 3288;
+     //节日计费点按钮刷新通知
+     FESTIVAL_ZERO_FRESH_DATA_NOTIFY = 3289;
+
+     // 神兵夺魁决赛数据
+     CS_WEAPONFIGHT_FINAL_DATA_REQ = 3290;
+     CS_WEAPONFIGHT_FINAL_DATA_RES = 3291;
+
+     // 助战
+     CS_WEAPONFIGHT_ASSIST_IN_FIGHTING_REQ = 3292;
+     CS_WEAPONFIGHT_ASSIST_IN_FIGHTING_RES = 3293;
+
+     // 助战记录
+     CS_WEAPONFIGHT_ASSIST_IN_FIGHTING_RECORD_REQ = 3294;
+     CS_WEAPONFIGHT_ASSIST_IN_FIGHTING_RECORD_RES = 3295;
+
+     //活动预告
+     CS_ACTIVITY_PREVIEW_REQ = 3296;
+     CS_ACTIVITY_PREVIEW_RES = 3297;
+
+     CS_ACTIVITY_PREVIEW_NOTIFY = 3298;
+
+     //累计签到奖励领取
+     //CS_GET_SIGN_IN_AWARD_REQ = 3299;
+     //CS_GET_SIGN_IN_AWARD_RES = 3300;
+
+
+     //藏宝图副本-点击邀请按钮
+     CS_CLICK_INVITATION_REQ = 3301;
+     CS_CLICK_INVITATION_RES = 3302;
+
+     //藏宝图副本邀请玩家进入副本
+     CS_INVITATION_PLAYER_REQ = 3303;
+     CS_INVITATION_PLAYER_RES = 3304;
+	 //婚礼祝福
+	 CS_WEDDING_BLESSING_REQ = 3305;
+	 CS_WEDDING_BLESSING_RES = 3306;
+
+	 //结婚誓言
+	 CS_MARRY_OATH_REQ = 3307;
+	 CS_MARRY_OATH_RES = 3308;
+
+	 //婚礼阶段notify
+	 CS_WEDDING_STAGE_NOTIFY = 3309;
+
+	 //获取婚礼称号
+	 CS_GET_WEDDING_TITLE_REQ = 3310;
+	 CS_GET_WEDDING_TITLE_RES = 3311;
+
+	 //发喜糖
+	 CS_SEND_XITANG_REQ = 3312;
+	 CS_SEND_XITANG_RES = 3313;
+
+	 //发喜糖notify
+	 CS_SEND_XITANG_NOTIFY = 3314;
+
+	 //购买喜糖
+	 CS_BUY_XITANG_REQ = 3315;
+	 CS_BUY_XITANG_RES = 3316;
+
+
+     //财源滚滚活动信息请求
+     CS_GET_ROLLING_INFO_REQ = 3318;
+     CS_GET_ROLLING_INFO_RES = 3319;
+     //财源滚滚抽签请求
+     CS_GET_ROLLING_AWARD_REQ = 3320;
+     CS_GET_ROLLING_AWARD_RES = 3321;
+     //财源滚滚活动结束通知
+     ROLLING_END_NOTIFY = 3322;
+
+
+     //被邀请者请求进入藏宝图副本
+     CS_ENTER_TREASURE_REQ = 3323;
+     CS_ENTER_TREASURE_RES = 3324;
+
+     //财源滚滚重新倒计时请求
+     CS_GET_COUNT_TIME_REQ = 3325;
+     CS_GET_COUNT_TIME_RES = 3326;
+
+	 //服务器通知客户端活动表格的时间和周数据
+	 CS_ACTIVITY_CONFIG_NOTIFY = 3327;
+
+	 //客户端申请活动表格数据
+	 CS_ACTIVITY_CONFIG_REQ = 3328;
+	 CS_ACTIVITY_CONFIG_RES = 3329;
+
+	 //激活护法
+	 CS_BEAST_BATTLE_ACTIVITY_REQ = 3330;
+	 CS_BEAST_BATTLE_ACTIVITY_RES = 3331;
+
+     //服务器主动通知客户端消息，如错误码等
+     CS_MESSAGE_NOTIFY = 3332;
+     //幸运转盘
+     //幸运转盘获取信息
+     CS_GET_LUCK_WHEEL_INFO_REQ = 3333;
+     CS_GET_LUCK_WHEEL_INFO_RES = 3334;
+
+     //抽取幸运转盘
+     CS_DRAW_LUCK_WHEEL_REQ = 3335;
+     CS_DRAW_LUCK_WHEEL_RES = 3336;
+
+     //获取幸运转盘奖励
+     CS_GET_LUCK_AWARD_REQ = 3337;
+     CS_GET_LUCK_AWARD_RES = 3338;
+
+     //幸运转盘结束通知
+     CS_LUCK_WHEEL_END_NOTIFY = 3339;
+
+     //幸运转盘请求添加物品
+     CS_LUCK_WHEEL_ADD_ITEM_REQ = 3340;
+     CS_LUCK_WHEEL_ADD_ITEM_RES = 3341;
+
+     //限时礼包领取奖励
+     CS_TIME_LIMIT_GET_REWARD_REQ =  3342;
+     CS_TIME_LIMIT_GET_REWARD_RES = 3343;
+
+     //限时礼包活动开关通知
+     CS_TIME_LIMIT_PACKAGE_ACT_STATE_NOTIFY = 3344;
+
+	 //获取情缘界面
+	 CS_GET_MARRY_INFO_REQ = 3345;
+	 CS_GET_MARRY_INFO_RES = 3346;
+
+	 //领取结婚纪念日奖励
+	 CS_GET_MARRY_DATE_AWARD_REQ = 3347;
+	 CS_GET_MARRY_DATE_AWARD_RES = 3348;
+
+	 //使用婚书NOTIFY
+	 CS_USE_MARRY_BOOK_NOTIFY = 3349;
+
+	 //退出婚礼
+	 CS_QUIT_WEDDING_REQ = 3350;
+	 CS_QUIT_WEDDING_RES = 3351;
+
+     //通知玩家订婚结果
+     CS_BETROTHAL_RESULT_NOTIFY = 3352;
+
+	 //天墓禁地-手动解锁buff
+	 CS_UNLOCK_BUFF_REQ = 3353;
+	 CS_UNLOCK_BUFF_RES = 3354;
+
+     //解除订婚关系
+     CS_DELETE_BETROTHAL_RELATIONSHIP_REQ = 3355;
+     CS_DELETE_BETROTHAL_RELATIONSHIP_RES = 3356;
+
+     //跳舞请求
+     CS_GET_DANCE_REQ = 3357;
+     CS_GET_DANCE_RES = 3358;
+
+     //通知视野内的其他玩家跳舞开始或者结束
+     CS_PLAYER_DANCE_NOTIFY = 3359;
+
+     //舞技提升通知
+     CS_PLAYER_DANCE_SKILL_RAISE_NOTIFY = 3360;
+
+     //舞技值增加通知
+     CS_PLAYER_DANCE_EXP_RAISE_NOTIFY   = 3361;
+
+	 //天墓禁地-抢夺列表
+	 CS_SKYFALL_ROB_LIST_REQ = 3362;
+	 CS_SKYFALL_ROB_LIST_RES = 3363;
+
+	 //天幕禁地-抢夺
+	 CS_SKYFALL_ROB_REQ = 3364;
+	 CS_SKYFALL_ROB_RES = 3365;
+
+	 //激活神兽天赋
+	 CS_BEAST_ACTIVE_GIFT_PROPERTY_REQ = 3366;
+	 CS_BEAST_ACTIVE_GIFT_PROPERTY_RES = 3367;
+
+     //跳舞等级请求
+     CS_PLAYER_DANCE_LEVEL_REQ = 3368;
+     CS_PLAYER_DANCE_LEVEL_RES = 3369;
+
+     //情缘上线提醒
+     CS_PARTNER_LOGIN_NOTIFY = 3370;
+
+	 //天墓禁地-上报抢夺结果
+	 CS_SKYFALL_ROB_RESULT_REQ = 3371;
+	 CS_SKYFALL_ROB_RESULT_RES = 3372;
+
+     // 清技能CD通知
+     CS_SKILL_CLEAR_CD_NOTIFY = 3373;
+
+     //获取侠客挑战的基础信息
+     CS_GET_KNIGHT_CHALLENGE_REQ = 3374;
+     CS_GET_KNIGHT_CHALLENGE_RES = 3375;
+
+	// 重生
+	CS_BEAST_RESET_REQ = 3376;
+	CS_BEAST_RESET_RES = 3377;
+
+     //复仇，通缉扣钱通知
+     CS_ENEMY_CHALLENGE_REMOVE_COPPER_NOTIFY = 3378;
+
+     CS_ARREST_BEKILLED_NOTIFY = 3379;
+
+     //添加进通缉列表
+     CS_ADD_ARREST_LIST_REQ = 3380;
+     CS_ADD_ARREST_LIST_RES = 3381;
+
+    //添加进统计列表通知
+     CS_ADD_ARREST_LIST_NOTIFY = 3382;
+
+     //得到复仇，通缉次数
+     CS_GET_CHALLENGE_TIMES_REQ = 3383;
+     CS_GET_CHALLENGE_TIMES_RES = 3384;
+
+     //清楚复仇冷却时间
+     CS_CLEAR_COOLDOWN_TIME_REQ = 3385;
+     CS_CLEAR_COOLDOWN_TIME_RES = 3386;
+
+
+     CS_PUBLISH_ARRST_NOTIFY = 3387;
+
+     //查看是否可以通缉
+     CS_GET_ARREST_CHALLENGE_REQ = 3388;
+     CS_GET_ARREST_CHALLENGE_RES = 3389;
+
+
+    //拍卖行竟拍延时
+     CS_BID_EXTEND_TIME_NOTIFY = 3390;
+
+    //领地行商信息请求
+     CS_TERRITORY_AUCTION_INFO_REQ = 3391;
+     CS_TERRITORY_AUCTION_INFO_RES = 3392;
+
+	// 喜糖CD NOTIFY
+	CS_XITANG_CD_NOTIFY = 3393;
+
+    // 进入比武场
+    CS_BIWU_ENTER_REQ = 3394;
+    CS_BIWU_ENTER_RES = 3395;
+
+    // 离开比武场
+    CS_BIWU_LEAVE_REQ = 3396;
+    CS_BIWU_LEAVE_RES = 3397;
+
+    // 请求擂台信息
+    CS_BIWU_GET_ARENA_INFO_REQ = 3398;
+    CS_BIWU_GET_ARENA_INFO_RES = 3399;
+
+    // 比武场上擂台
+    CS_BIWU_GO_ARENA_REQ = 3400;
+    CS_BIWU_GO_ARENA_RES = 3401;
+
+    // 接受挑战
+    CS_BIWU_ACCEPT_FIGHT_REQ = 3402;
+    CS_BIWU_ACCEPT_FIGHT_RES = 3403;
+
+    // 挑战通知
+    CS_BIWU_FIGHT_NOTIFY = 3404;
+
+	//神兽之力 - 解锁和升级
+	CS_BEAST_EFFECT_UPGRADE_REQ = 3405;
+	CS_BEAST_EFFECT_UPGRADE_RES = 3406;
+
+	//重置秘术buff
+	CS_SKYFALL_RESET_BUFF_REQ = 3407;
+	CS_SKYFALL_RESET_BUFF_RES = 3408;
+
+	// 获取神兽成就
+	CS_GET_BEAST_ACHIEVEMENT_REQ = 3409;
+	CS_GET_BEAST_ACHIEVEMENT_RES = 3410;
+
+     //陆请求倒计时和次数
+     CS_LOGIN_GET_COUNT_TIME_REQ = 3411;
+     CS_LOGIN_GET_COUNT_TIME_RES = 3412;
+
+     //另一半同意订婚
+     CS_ANOTHER_AGREE_BETROTHAL_NOTIFY = 3413;
+     //复活通知
+     CS_ARREST_REVIVE_NOTIFY = 3414;
+
+
+	 //喜糖数量不足notify
+	 CS_XITANG_COUNT_NOT_ENOUGH_NOTIFY = 3415;
+		 //天墓禁地-抢夺信息通知
+	 CS_SKYFALL_ROB_DATA_NOTIFY = 3416;
+
+	 //分身学习技能
+	 CS_AVATAR_LEARN_SKILL_REQ = 3417;
+	 CS_AVATAR_LEARN_SKILL_RES = 3418;
+
+	 //分身-调整出战顺序
+	 CS_AVATAR_FIGHT_ORDER_CHANGE_REQ = 3419;
+	 CS_AVATAR_FIGHT_ORDER_CHANGE_RES = 3420;
+
+     //跳舞召唤神兽
+     CS_SUMMON_ANIMAL_REQ = 3421;
+     CS_SUMMON_ANIMAL_RES = 3422;
+
+	 //分身-更新分身信息
+	 CS_AVATAR_INFO_NOTIFY = 3423;
+
+     //修改称谓
+     CS_CHANGE_POSITION_NAME_REQ = 3425;
+     CS_CHANGE_POSITION_NAME_RES = 3426;
+
+	 //分身-更换职业
+	 CS_AVATAR_CHANGE_WEAPON_REQ = 3427;
+	 CS_AVATAR_CHANGE_WEAPON_RES = 3428;
+
+     //预退出帮会
+     CS_PRE_QUIT_FACTION_REQ = 3429;
+     CS_PRE_QUIT_FACTION_RES = 3430;
+
+     //我的摊位notify --从数据库拉取出来后推送给客户端
+     CS_PLAYER_STALL_NOTIFY = 3431;
+
+     //服务器主动删除仇人通知
+     CS_DELETE_ENEMY_NOTIFY = 3432;
+
+     // 领取演武场每日奖励
+     CS_HUMAN_MAC_DAILY_AWARK_GET_REQ = 3433;
+     CS_HUMAN_MAC_DAILY_AWARK_GET_RES = 3434;
+
+	//在婚礼中购买婚礼商店物品
+	CS_WEDDING_SHOP_BUY_REQ = 3435;
+	CS_WEDDING_SHOP_BUY_RES = 3436;
+
+    //选择离婚类型
+    CS_SELECT_DIVORCE_TYPE_REQ = 3437;
+    CS_SELECT_DIVORCE_TYPE_RES = 3438;
+
+    //周一福利信息
+     CS_GET_MONDAY_BENEFIT_INFO_REQ = 3439;
+     CS_GET_MONDAY_BENEFIT_INFO_RES = 3440;
+
+     //周一福利刷新
+     CS_REFRESH_MONDAY_BENEFIT_INFO_NOTIFY = 3441;
+
+     //领取周一福利
+     CS_GET_MONDAY_BENEFIT_REQ = 3442;
+     CS_GET_MONDAY_BENEFIT_RES = 3443;
+
+     //重新获取倒计时通知
+     CS_NEW_COUNT_TIME_NOTIFY = 3444;
+
+     //权限指定
+     CS_SPECIFY_FACTION_AUTHORITY_REQ = 3445;
+     CS_SPECIFY_FACTION_AUTHORITY_RES = 3446;
+
+	 //帮会打造获取幸运签信息
+	 CS_GET_FACTION_SMITH_LUCKY_TIP_INFO_REQ = 3447;
+	 CS_GET_FACTION_SMITH_LUCKY_TIP_INFO_RES = 3448;
+
+	 //删除婚礼申请列表名单NOTIFY
+	 CS_DELETE_APPLICANT_LIST_NOTIFY = 3449;
+
+     //实时更新邮件的有效期
+     CS_FRESH_MAIL_EXPIRE_NOTIFY = 3450;
+
+     //获取天天闯关活动信息
+     CS_GET_DAY_ADD_UP_RECHARGE_INFO_REQ = 3451;
+     CS_GET_DAY_ADD_UP_RECHARGE_INFO_RES  = 3452;
+
+     //购买天天礼包
+     CS_BUY_DAY_ADD_UP_RECHARGE_REQ = 3453;
+     CS_BUY_DAY_ADD_UP_RECHARGE_RES  = 3454;
+
+     //天天礼包活动开关通知
+     CS_DAY_ADD_UP_RECHARGE_OPEN_NOTIFY = 3455;
+
+     //幸运转盘0点刷新免费次数通知
+     CS_REFRESH_EVERYDAY_DRAW_NOTIFY = 3456;
+
+     //通知演武场每日奖励
+     CS_HUMAN_MAC_DAILY_AWARK_GET_NOTIFY = 3457;
+
+     //天天闯关 充值通知
+     CS_DAY_ADD_UP_RECHARGE_NOTIFY = 3458;
+
+    //帮会签到
+     CS_FACTION_SIGN_IN_REQ = 3459;
+     CS_FACTION_SIGN_IN_RES = 3460;
+
+     //帮会福利界面
+     CS_GET_FACTION_WELFARE_INFO_REQ = 3461;
+     CS_GET_FACTION_WELFARE_INFO_RES = 3462;
+
+     //获取社交服信息
+     CS_GET_SOCIAL_WORD_INFO_REQ = 3463;
+     CS_GET_SOCIAL_WORD_INFO_RES = 3464;
+
+    // 获取比武请求列表
+    CS_BIWU_GET_FIGHT_LIST_REQ = 3465;
+    CS_BIWU_GET_FIGHT_LIST_RES = 3466;
+
+    // 离开擂台
+    CS_BIWU_LEAVE_ARENA_REQ = 3467;
+    CS_BIWU_LEAVE_ARENA_RES = 3468;
+
+    //天命转盘添加天命卷协议
+    CS_TMJ_ADD_NOTIFY = 3469;
+
+    //七宗罪进入boss出生点
+    CS_LDMJ_ENTER_BOSS_BIRTH_POS_REQ = 3470;
+    CS_LDMJ_ENTER_BOSS_BIRTH_POS_RES = 3471;
+
+     //单笔充值页签信息请求
+     CS_SINGLE_PEN_RECHARGE_INFO_REQ = 3472;
+     CS_SINGLE_PEN_RECHARGE_INFO_RES = 3473;
+     CS_RECEIVE_AWARD_REQ            = 3474;
+     CS_RECEIVE_AWARD_RES            = 3475;
+     CS_RECEIVE_NOTIFY               = 3476;
+     CS_ACTIVITY_START_NOTIFY        = 3477;
+     CS_ACTIVITY_END_NOTIFY          = 3478;
+
+	//当前解锁时装信息
+	CS_OUTWARD_INFO_NOTIFY = 3479;
+
+    // 比武场阶段通知
+    CS_BIWU_STAGE_INFO_NOTIFY = 3480;
+
+
+	//申请任务跳转场景
+	CS_TASK_JUMP_SCENE_REQ = 3481;
+	CS_TASK_JUMP_SCENE_RES = 3482;
+
+    //神兽召唤商店获取
+    CS_GET_SHENSHOU_SHOP_INFO_REQ = 3483;
+    CS_GET_SHENSHOU_SHOP_INFO_RES = 3484;
+
+    //神兽召唤商店购买
+    CS_BUY_SHENSHOU_SHOP_GOOD_REQ = 3485;
+    CS_BUY_SHENSHOU_SHOP_GOOD_RES = 3486;
+
+    //社交服测试NOTIFY
+    CS_SOCIAL_TEST_NOTIFY = 3487;
+
+    //使用附魔石
+    CS_USE_FUMO_STONE_REQ = 3488;
+    CS_USE_FUMO_STONE_RES = 3489;
+
+
+	 //宾客使用请柬
+	 CS_USE_INVITATION_CARD_RES = 3490;
+
+     //神兽召唤商店刷新
+     CS_REFRESH_SHENSHOU_SHOP_REQ = 3491;
+     CS_REFRESH_SHENSHOU_SHOP_RES = 3492;
+
+     //神兽召唤商店刷新通知
+     CS_REFRESH_SHENSHOU_SHOP_NOTIFY = 3493;
+
+     //获取技能点永久属性物品使用情况
+     CS_GET_ITEM_USE_COND_NOTIFY = 3494;
+
+     //摆摊物品被售出的通知
+     CS_PLAYER_STALL_SOLDOUT_NOTIFY = 3495;
+
+     //分享个人空间
+     CS_SHARE_SOCIAL_SPACE_REQ = 3496;
+     CS_SHARE_SOCIAL_SPACE_RES = 3497;
+
+     //装备一键强化请求
+     CS_ALL_POSITION_STRENGTHEN_REQ = 3498;
+     CS_ALL_POSITION_STRENGTHEN_RES = 3499;
+
+     // 比武场结果通知
+     CS_BIWU_RESULT_NOTIFY = 3500;
+
+     // 比武场次观战
+     CS_BIWU_WATCH_REQ = 3501;
+     CS_BIWU_WATCH_RES = 3502;
+
+
+     //小七宗罪
+     CS_SEVEN_CRIME_JOIN_REQ = 3503;
+     CS_SEVEN_CRIME_JOIN_RES = 3504;
+     CS_SEVEN_CRIME_STATE_NOTIFY = 3505;
+
+     //获取七日cp数据
+     CS_GET_SEVEN_CP_INFO_REQ = 3506;
+     CS_GET_SEVEN_CP_INFO_RES = 3507;
+
+     //提交资料答案
+     CS_SUBMIT_SEVEN_CP_ANSWER_REQ = 3508;
+     CS_SUBMIT_SEVEN_CP_ANSWER_RES = 3509;
+
+
+	 //拉取宠物数据
+	 CS_SEVEN_CP_PET_DATA_REQ = 3510;
+	 CS_SEVEN_CP_PET_DATA_RES = 3511;
+
+	 //领取宠物
+	 CS_SEVEN_CP_NEW_PET_REQ = 3512;
+	 CS_SEVEN_CP_NEW_PET_RES = 3513;
+
+	 //宠物修改称呼
+	 CS_SEVEN_CP_CHANGE_NAME_REQ = 3514;
+	 CS_SEVEN_CP_CHANGE_NAME_RES = 3515;
+
+	 //宠物喂养
+	 CS_SEVEN_CP_PET_FEED_REQ = 3516;
+	 CS_SEVEN_CP_PET_FEED_RES = 3517;
+
+	 //查看成长信息
+	 CS_SEVEN_CP_PET_EXP_DETAIL_REQ = 3518;
+	 CS_SEVEN_CP_PET_EXP_DETAIL_RES = 3519;
+
+	 //宠物交互操作
+	 CS_SEVEN_CP_PET_INTERACT_REQ = 3520;
+	 CS_SEVEN_CP_PET_INTERACT_RES = 3521;
+
+	 //宠物信息刷新通知
+	 CS_SEVEN_CP_PET_INFO_NOTIFY = 3522;
+
+     // 比武场对战信息
+     CS_BIWU_FIGHT_INFO_REQ = 3523;
+     CS_BIWU_FIGHT_INFO_RES = 3524;
+
+
+     // 进入任务场
+     CS_SEVEN_CP_ENTER_TASK_FIELD_REQ = 3525;
+     CS_SEVEN_CP_ENTER_TASK_FIELD_RES = 3526;
+
+     // 进入任务场通知
+     CS_SEVEN_CP_ENTER_TASK_FIELD_NOTIFY = 3527;
+
+     // 进入任务场确认请求
+     CS_SEVEN_CP_ENTER_TASK_FIELD_CONFIRM_REQ = 3528;
+     CS_SEVEN_CP_ENTER_TASK_FIELD_CONFIRM_RES = 3529;
+
+     // 进入任务场拒绝通知
+     CS_SEVEN_CP_ENTER_TASK_FIELD_CONFIRM_NOTIFY = 3530;
+
+     // 任务列表请求
+     CS_SEVEN_CP_GET_TASK_LIST_REQ = 3531;
+     CS_SEVEN_CP_GET_TASK_LIST_RES = 3532;
+
+     // 任务完成通知
+     CS_SEVEN_CP_TASK_SCHEDULE_NOTIFY = 3533;
+
+     // 任务完成请求
+     CS_SEVEN_CP_TASK_COMPLETE_REQ = 3534;
+     CS_SEVEN_CP_TASK_COMPLETE_RES = 3535;
+
+    //开始匹配有缘人请求
+    CS_MATCH_SEVEN_CP_LUCKY_PERSON_REQ = 3536;
+    CS_MATCH_SEVEN_CP_LUCKY_PERSON_RES = 3537;
+
+    //关闭有缘人界面请求
+    CS_CLOSE_SEVEN_CP_LUCKY_PERSON_MATCH_REQ = 3538;
+    CS_CLOSE_SEVEN_CP_LUCKY_PERSON_MATCH_RES = 3539;
+
+    //申请有缘人请求
+    CS_APPLY_SEVEN_CP_LUCKY_PERSON_REQ = 3540;
+    CS_APPLY_SEVEN_CP_LUCKY_PERSON_RES = 3541;
+	 //	进入初见场景申请
+	 CS_ENTER_FIRST_MEET_REQ = 3542;
+	 CS_ENTER_FIRST_MEET_RES = 3543;
+
+	 //拒绝进入初见副本notify
+	 CS_REFUSE_ENTER_FIRST_MEET_NOTIFY = 3544;
+
+	 //发起真心话大冒险请求
+	 CS_ZHENXINHUA_DAMAOXIAN_REQ = 3545;
+	 CS_ZHENXINHUA_DAMAOXIAN_RES = 3546;
+
+     //退出初见场景
+     CS_QUIT_FIRST_MEET_ROOM_REQ = 3547;
+     CS_QUIT_FIRST_MEET_ROOM_RES = 3548;
+
+     //有缘人加好友notify
+     CS_LUCKYPERSON_ADD_FRIEND_NOTIFY = 3549;
+
+     //初见场景有缘人加好友
+     CS_FIRST_MEET_ADD_FRIEND_REQ = 3550;
+     CS_FIRST_MEET_ADD_FRIEND_RES = 3551;
+     //七日CP夜间玩法
+     CS_CP_ENTER_NIGHT_GAMEPLAY_REQ = 3552;
+     CS_CP_ENTER_NIGHT_GAMEPLAY_RES = 3553;
+
+     //初见场景信息下发notify
+     CS_FIRST_MEET_ROOM_INFO_NOTIFY = 3554;
+
+    //世界语音红包活动阶段通知
+    CS_WORLD_VOICE_RED_PACKET_ACT_STAGE_NOTIFY = 3555;
+
+    //世界语音红包状态通知
+    CS_WORLD_VOICE_RED_PACKET_STATE_NOTIFY = 3556;
+
+    //领取世界语音红包
+    CS_WORLD_VOICE_RED_PACKET_DRAW_REQ = 3557;
+    CS_WORLD_VOICE_RED_PACKET_DRAW_RES = 3558;
+
+    //获取世界语音红包列表
+    CS_GET_WORLD_VOICE_RED_PACKET_LIST_REQ = 3559;
+    CS_GET_WORLD_VOICE_RED_PACKET_LIST_RES = 3560;
+
+    // 取消观战
+    CS_BIWU_CANCEL_WATCH_REQ = 3561;
+    CS_BIWU_CANCEL_WATCH_RES = 3562;
+
+    //点赞世界语音红包
+    CS_WORLD_VOICE_RED_PACKET_THUMB_REQ = 3563;
+    CS_WORLD_VOICE_RED_PACKET_THUMB_RES = 3564;
+
+    //取消观战通知
+    CS_BIWU_CANCEL_WATCH_NOTIFY = 3565;
+
+     //进入小攻城战
+     CS_ENTER_VICE_TERRITORY_REQ = 3566;
+     CS_ENTER_VICE_TERRITORY_RES = 3567;
+
+     // 离开CP任务场景
+     CS_SEVEN_CP_TASK_LEAVE_ROOM_REQ = 3568;
+     CS_SEVEN_CP_TASK_LEAVE_ROOM_RES = 3569;
+
+
+     //通知游戏状态
+     CS_SMALL_GAME_STATE_NOTIFY = 3570;
+     //见缝插针--选择颜色
+     CS_GAME_NEEDLE_CHOOSE_COLOR_REQ = 3571;
+     CS_GAME_NEEDLE_CHOOSE_COLOR_RES = 3572;
+     //见缝插针--通知队友选择的颜色
+     CS_GAME_NEEDLE_CHOOSE_COLOR_NOTIFY = 3573;
+     //见缝插针--插针请求
+     CS_GAME_NEEDLE_INSERT_REQ = 3574;
+     CS_GAME_NEEDLE_INSERT_RES = 3575;
+     //见缝插针--求助请求
+     CS_GAME_NEEDLE_HELP_REQ = 3576;
+     CS_GAME_NEEDLE_HELP_RES = 3577;
+
+
+     //查看有缘人申请列表
+     CS_GET_SEVEN_CP_APPLY_LUCKY_PERSON_LIST_REQ = 3578;
+     CS_GET_SEVEN_CP_APPLY_LUCKY_PERSON_LIST_RES = 3579;
+
+     //处理有缘人申请
+     CS_DEAL_SEVEN_CP_LUCKY_PERSON_REQ = 3580;
+     CS_DEAL_SEVEN_CP_LUCKY_PERSON_RES = 3581;
+
+     //通知解除有缘人提示
+     CS_RELEASE_SEVEN_CP_LUCKY_PERSON_NOTIFY = 3582;
+
+     //查看有缘人信息
+     CS_GET_SEVEN_CP_LUCKY_PERSON_REQ = 3583;
+     CS_GET_SEVEN_CP_LUCKY_PERSON_RES = 3584;
+
+     //申请成为Cp
+     CS_APPLY_SEVEN_CP_REQ = 3585;
+     CS_APPLY_SEVEN_CP_RES = 3586;
+
+     //申请成为Cp通知
+     CS_APPLY_SEVEN_CP_NOTIFY = 3587;
+
+     //同意申请成为CP
+     CS_AGREE_SEVEN_CP_APPLY_REQ = 3588;
+     CS_AGREE_SEVEN_CP_APPLY_RES = 3589;
+
+     //成为CP通知
+     CS_BE_SEVEN_CP_NOTIFY = 3590;
+
+     //公开成为CP喜讯请求
+     CS_ANNOUNCE_SEVEN_CP_REQ = 3591;
+     CS_ANNOUNCE_SEVEN_CP_RES = 3592;
+
+     //查询CP信息请求
+     CS_GET_SEVEN_CP_ROLE_INFO_REQ = 3593;
+     CS_GET_SEVEN_CP_ROLE_INFO_RES = 3594;
+
+	 //七日cp找茬小游戏
+	 CS_GAME_DIFFERENCE_CHOOSE_REQ = 3595;
+	 CS_GAME_DIFFERENCE_CHOOSE_RES = 3596;
+     CS_GAME_DIFFERENCE_CHOOSE_NOTIFY = 3597;
+     CS_GAME_DIFFERENCE_ANSWER_NOTIFY = 3598;
+     CS_GAME_DIFFERENCE_CORRECT_REQ = 3599;
+     CS_GAME_DIFFERENCE_CORRECT_RES = 3600;
+
+     //查询星座统计信息
+     CS_GET_CONSTELLATION_COUNT_REQ = 3601;
+     CS_GET_CONSTELLATION_COUNT_RES = 3602;
+
+
+	 	//神兽升级
+	 CS_BEAST_UP_LEVEL_REQ = 3603;
+	 CS_BEAST_UP_LEVEL_RES = 3604;
+
+     //神兽位置调整
+	 CS_BEAST_MODIFY_FORMATION_POS_REQ = 3605;
+	 CS_BEAST_MODIFY_FORMATION_POS_RES = 3606;
+
+     // 取消挑战通知
+     CS_BIWU_CANCEL_FIGHT_NOTIFY = 3607;
+
+     //小游戏排行榜
+     CS_GAME_RANK_NOTIFY = 3608;
+	 //给玩家添加宠物信息
+	 CS_PLAYER_SUMMON_PET_NOTIFY = 3609;
+
+     //世界语音红包活动当前轮次开始时间
+     CS_WORLD_VOICE_RED_PACKET_ACT_CURR_ROUND_START_TIME_NOTIFY = 3610;
+     //见缝插针同步数据
+     CS_GAME_NEEDLE_SYN_DATA_NOTIFY = 3611;
+
+     CS_GAME_DIFFERENCE_SYN_ANSWER_NOTIFY = 3612;
+
+    //修改帮会签到内容
+    CS_MODIFY_FACTION_SIGN_IN_CONTENT_REQ = 3613;
+    CS_MODIFY_FACTION_SIGN_IN_CONTENT_RES = 3614;
+
+
+
+    //获取单个世界语音红包
+    CS_GET_ONE_WORLD_VOICE_RED_PACKET_REQ = 3615;
+    CS_GET_ONE_WORLD_VOICE_RED_PACKET_RES = 3616;
+
+    //点击开始
+    CS_CLICK_START_REQ = 3617;
+    CS_CLICK_START_RES = 3618;
+    CS_PARTNER_CLICK_START_NOTIFY = 3619;
+
+    //找茬小游戏数据同步
+    CS_GAME_FINDDIFF_SYN_DATA_NOTIFY = 3620;
+
+
+    //通知成为有缘人提示
+    CS_ADD_SEVEN_CP_LUCKY_PERSON_NOTIFY = 3621;
+
+    //有缘人申请设置请求
+    CS_SET_SEVEN_CP_NOT_APPLY_LUCKY_REQ = 3622;
+    CS_SET_SEVEN_CP_NOT_APPLY_LUCKY_RES = 3623;
+
+    //查询预测匹配有缘人响应
+    CS_GET_SEVEN_CP_MATCH_COUNT_REQ = 3624;
+    CS_GET_SEVEN_CP_MATCH_COUNT_RES = 3625;
+
+    //小七宗罪排行榜信息通知
+    CS_SEVEN_CRIME_RANK_INFO_NOTIFY = 3626;
+    CS_SEVEN_CRIME_ENTER_BOSS_BIRTH_POS_REQ = 3627;
+    CS_SEVEN_CRIME_ENTER_BOSS_BIRTH_POS_RES = 3628;
+
+    //小游戏等待场景人数变化
+    CS_GAME_WAITER_NUM_NOTIFY = 3629;
+
+    //小游戏找茬物品使用
+    CS_GAME_DIFF_USE_GOODS_REQ = 3630;
+    CS_GAME_DIFF_USE_GOODS_RES = 3631;
+
+    //英雄挑战，检查玩家是否能挑战
+    CS_CAN_PLAYER_CHALLENGE_HERO_REQ = 3632;
+    CS_CAN_PLAYER_CHALLENGE_HERO_RES = 3633;
+
+    //幕禁地神弑伤害下发通知
+    CS_SKYFALL_BUFF_HURT_NOTIFY = 3634;
+
+
+    //幸运转盘活动开启notify
+    CS_LUCK_WHEEL_OPEN_NOTIFY = 3635;
+
+    //夜间场景召唤通知
+    CS_SUMMOM_ID_NOTIFY = 3636;
+    //刷新祝福值请求
+    CS_FRESH_ZHU_FU_VALUE_REQ = 3637;
+    CS_FRESH_ZHU_FU_VALUE_RES = 3638;
+
+    //进入初见场景通知
+    CS_ENTER_FIRST_MEET_NOTIFY = 3639;
+	//神兽下阵
+	CS_BEAST_DOWN_FORMATION_REQ = 3640;
+	CS_BEAST_DOWN_FORMATION_RES = 3641;
+
+    CS_GAME_NEEDLE_HELP_NOTIFY = 3642;
+
+    //成为有缘人通知
+    CS_SEVEN_CP_LUCKY_PERSON_NOTIFY = 3643;
+
+    //buff效果通知
+    CS_BUFFER_EFFECT_NOTIFY = 3644;
+
+    //领取神兽召唤商店升级奖励
+    CS_GET_SHEN_SHOU_SHOP_UP_REWARD_REQ = 3645;
+    CS_GET_SHEN_SHOU_SHOP_UP_REWARD_RES = 3646;
+
+    //边玩边下载运营奖励
+    CS_ACTIVE_PLAY_DOWNLOAD_AWARD_REQ = 3647;
+    CS_ACTIVE_PLAY_DOWNLOAD_AWARD_RES = 3648;
+
+ 	//通知客户端减技能cd
+	CS_REDUCE_SKILL_CD_NOTIFY = 3649;
+
+    //边玩边下载获取奖励领取情况
+    CS_ACT_PLAY_DOWNLOAD_ACQUIRE_REQ = 3650;
+    CS_ACT_PALY_DOWNLOAD_ACQUIRE_RES = 3651;
+
+    //幸运转盘获取天命卷
+    CS_LUCK_WHEEL_GET_TMJ_INFO_REQ  = 3652;
+    CS_LUCK_WHEEL_GET_TMJ_INFO_RES = 3653;
+
+    CS_LUCK_WHEEL_BUY_TMJ_REQ = 3654;
+    CS_LUCK_WHEEL_BUY_TMJ_RES = 3655;
+
+	//运营活动战力排行榜notify
+	CS_OPERATERANK_FIGHTING_NOTIFY = 3656;
+
+    //获取玩家的buff信息
+    CS_GET_BUFF_REQ = 3657;
+    CS_GET_BUFF_RES = 3658;
+
+    //好声音活动信息通知
+    CS_GOOD_VOICE_ACT_INFO_NOTIFY = 3659;
+
+    //获取好声音活动信息
+    CS_GET_GOOD_VOICE_ACT_INFO_REQ = 3660;
+    CS_GET_GOOD_VOICE_ACT_INFO_RES = 3661;
+
+    //获取单个好声音题目信息
+    CS_GET_ONE_GOOD_VOICE_TITLE_REQ = 3662;
+    CS_GET_ONE_GOOD_VOICE_TITLE_RES = 3663;
+
+    //玩家参与了某个题目
+    CS_ATTEND_ONE_GOOD_VOICE_TITLE_REQ = 3664;
+    CS_ATTEND_ONE_GOOD_VOICE_TITLE_RES = 3665;
+
+    //提交好声音
+    CS_SUBMIT_GOOD_VOICE_REQ = 3666;
+    CS_SUBMIT_GOOD_VOICE_RES = 3667;
+
+    //点赞好声音
+    CS_GOOD_VOICE_THUMB_REQ = 3668;
+    CS_GOOD_VOICE_THUMB_RES = 3669;
+
+    //选择好声音
+    CS_SELECT_GOOD_VOICE_REQ = 3670;
+    CS_SELECT_GOOD_VOICE_RES = 3671;
+
+	//切换技能方案
+	CS_SWAP_SKILL_PROJECT_REQ = 3672;
+	CS_SWAP_SKILL_PROJECT_RES = 3673;
+
+    //关卡信息请求
+    CS_LEVEL_CONFIG_REQ = 3674;
+    CS_LEVEL_CONFIG_RES = 3675;
+
+	//捉迷藏玩法邀请
+	CS_HOMESTEAD_INVITE_HIDE_AND_SEEK_REQ = 3676;
+	CS_HOMESTEAD_INVITE_HIDE_AND_SEEK_RES = 3677;
+
+	//捉迷藏玩法回复邀请
+	CS_HOMESTEAD_RESPOND_HIDE_AND_SEEK_REQ = 3678;
+	CS_HOMESTEAD_RESPOND_HIDE_AND_SEEK_RES = 3679;
+
+	//同步捉迷藏玩法状态
+	CS_HOMESTEAD_HIDE_AND_SEEK_STATE_NOTIFY = 3680;
+
+	//捉迷藏玩法确认隐藏
+	CS_HOMESTEAD_HIDE_AND_SEEK_HIDE_REQ = 3681;
+	CS_HOMESTEAD_HIDE_AND_SEEK_HIDE_RES = 3682;
+
+	//捉迷藏玩法戳穿隐藏
+	CS_HOMESTEAD_HIDE_AND_SEEK_SEEK_REQ = 3683;
+	CS_HOMESTEAD_HIDE_AND_SEEK_SEEK_RES = 3684;
+
+	//捉迷藏玩法通知场景内增加的物品
+	CS_HOMESTEAD_HIDE_AND_SEEK_ITEM_CHANGE_NOTIFY = 3685;
+
+    //CP互助传功请求协议
+    CS_SEVEN_CP_TRAIN_REQ = 3686;
+    CS_SEVEN_CP_TRAIN_RES = 3687;
+
+    //CP互助传功接受请求协议
+    CS_AGREE_SEVEN_CP_TRAIN_REQ = 3688;
+    CS_AGREE_SEVEN_CP_TRAIN_RES = 3689;
+
+	//获取七天乐面板信息
+	CS_GET_SEVENDAYHAPPY_INFO_REQ = 3690;
+	CS_GET_SEVENDAYHAPPY_INFO_RES = 3691;
+
+	//七天乐剩余时间notify
+	CS_SEVENDAYHAPPY_LEFT_TIME_NOTIFY = 3692;
+
+	//领取七天乐任务奖励
+	CS_GET_SEVENDAYHAPPY_AWARD_REQ = 3693;
+	CS_GET_SEVENDAYHAPPY_AWARD_RES = 3694;
+
+    // CP任务奖励通知
+    CS_CP_TASK_AWARD_NOTIFY = 3695;
+
+    //领取好声音某一道题的奖励
+    CS_GET_GOOD_VOICE_ONE_TITLE_AWARD_REQ = 3696;
+    CS_GET_GOOD_VOICE_ONE_TITLE_AWARD_RES = 3697;
+
+    //查询七日CP特权的基本消息
+    CS_QUERY_SEVEN_CP_PRIVILEGE_INFO_REQ = 3698;
+    CS_QUERY_SEVEN_CP_PRIVILEGE_INFO_RES = 3699;
+
+	//通知捉迷藏邀请
+	CS_HOMESTEAD_HIDE_AND_SEEK_INVITE_NOTIFY = 3700;
+
+    //cp摆贝壳上传摆放图案位置请求
+    CS_UP_PATTERN_REQ = 3701;
+    CS_UP_PATTERN_RES = 3702;
+
+    //cp摆贝壳同步图案位置
+    CS_SYN_PATTERN_NOTIFY = 3703;
+
+    //cp摆贝壳获取自己及cp摆放的贝壳信息
+    CS_GET_PATTERN_REQ = 3704;
+    CS_GET_PATTERN_RES = 3705;
+
+	//领取每日充值积分物品
+	CS_GET_EDP_EX_ITEM_REQ = 3706;
+	CS_GET_EDP_EX_ITEM_RES = 3707;
+
+	//方案技能点notify
+	CS_SKILL_PROJECT_SKIIPOINT_NOTIFY = 3708;
+    //见缝插针--取消选择颜色
+    CS_GAME_NEEDLE_CANCEL_COLOR_REQ = 3709;
+    CS_GAME_NEEDLE_CANCEL_COLOR_RES = 3710;
+
+    //野外修炼引导
+    CS_ENTER_HUNT_GUIDE_ROOM_REQ = 3711;
+    CS_ENTER_HUNT_GUIDE_ROOM_RES = 3712;
+
+    CS_HUNT_GUIDE_TEN_EXP_REQ = 3713;
+    CS_HUNT_GUIDE_TEN_EXP_RES = 3714;
+
+    CS_HUNT_GUIDE_NOTIFY     = 3715;
+
+    CS_HUNT_GUIDE_LEAVE_ROOM_REQ = 3716;
+    CS_HUNT_GUIDE_LEAVE_ROOM_RES = 3717;
+
+    //夜间场景选择烟花或孔明灯种类，填写寄语通知
+    CS_NIGHT_SCENE_SELECT_NOTIFY = 3718;
+
+    //夜间场景选择烟花或孔明灯种类，填写寄语
+    CS_NIGHT_SCENE_SELECT_REQ = 3719;
+    CS_NIGHT_SCENE_SELECT_RES = 3720;
+
+    //夜间场景召唤请求
+    CS_CHECK_CAN_SUMMOM_REQ = 3721;
+    CS_CHECK_CAN_SUMMOM_RES = 3722;
+
+	//技能方案改名
+	CS_SKILL_PROJECT_CHANGE_NAME_REQ = 3723;
+	CS_SKILL_PROJECT_CHANGE_NAME_RES = 3724;
+
+	//七天乐数据刷新notify
+	CS_SDH_FRESH_DATA_NOTIFY = 3725;
+
+	//使用推荐技能方案
+	CS_USE_RECOMMEND_SKILL_PROJECT_REQ = 3726;
+	CS_USE_RECOMMEND_SKILL_PROJECT_RES = 3727;
+
+    //保存cp日记请求
+    CS_SAVE_SEVEN_CP_DIARY_REQ = 3728;
+    CS_SAVE_SEVEN_CP_DIARY_RES = 3729;
+
+    //获取cp日志请求
+    CS_GET_SEVEN_CP_DIARY_REQ = 3730;
+    CS_GET_SEVEN_CP_DIARY_RES = 3731;
+
+    //连续登陆奖励
+    CS_GET_CONTINUOUS_LOGIN_INFO_REQ = 3732;
+    CS_GET_CONTINUOUS_LOGIN_INFO_RES = 3733;
+
+    CS_GAIN_CONTINUOUS_LOGIN_REWARD_REQ = 3734;
+    CS_GAIN_CONTINUOUS_LOGIN_REWARD_RES = 3735;
+
+    //琴箫合奏交互
+    CS_MUSIC_GAME_INTERACT_REQ = 3736;
+    CS_MUSIC_GAME_INTERACT_RES = 3737;
+
+    //进入琴箫合奏游戏通知
+    CS_ENTER_MUSIC_GAME_NOTIFY = 3738;
+
+    //确认进入琴箫合奏游戏
+    CS_ENTER_MUSIC_GAME_REQ = 3739;
+    CS_ENTER_MUSIC_GAME_RES = 3740;
+
+    //海滩摆贝壳信息通知
+    CS_PATTERN_PLAY_NOTIFY = 3741;
+
+    //玩家在天墓禁地副本中进入/离开战斗区信息通知
+    CS_PLAYER_PARTAKE_FIGHT_NOTIFY = 3742;
+
+    //预分享语音记录
+    CS_PRE_SHARE_VOICE_REQ = 3743;
+    CS_PRE_SHARE_VOICE_RES = 3744;
+
+	//通用fasttip通知
+	CS_FAST_TIPS_NOTIFY = 3745;
+
+    //一次性获取所有Group类型成就信息的请求协议
+    CS_GET_ALL_GROUP_ACHIEVE_LIST_REQ = 3746;
+    CS_GET_ALL_GROUP_ACHIEVE_LIST_RES = 3747;
+
+	//有缘人心动值notify
+	CS_LUCKYPERSON_HEARTBEATVALUE_NOTIFY = 3748;
+
+	//申请家具交互
+	CS_HOMESTEAD_FURNITURE_PLAY_REQ = 3749;
+	CS_HOMESTEAD_FURNITURE_PLAY_RES = 3750;
+
+	//当前家具交互状态
+	CS_HOMESTEAD_FURNITURE_STATE_NOTIFY = 3751;
+
+	//获取有缘人心动值
+	CS_GET_LUCKYPERSON_HEARTBEATVALUE_REQ = 3752;
+	CS_GET_LUCKYPERSON_HEARTBEATVALUE_RES = 3753;
+
+    //天幕禁地神力释放
+    CS_CAST_SHENLI_REQ = 3754;
+    CS_CAST_SHENLI_RES = 3755;
+
+	//取消家具互动
+	CS_HOMESTEAD_FURNITURE_PLAY_CANCEL_REQ = 3756;
+	CS_HOMESTEAD_FURNITURE_PLAY_CANCEL_RES = 3757;
+
+	//剩余技能点notify
+	CS_LAST_SKILL_POINT_NOTIFY = 3758;
+
+    //退出成为cp场景
+    CS_QUIT_BECOME_CP_REQ = 3759;
+    CS_QUIT_BECOME_CP_RES = 3760;
+
+	//查询神兽信息
+	CS_QUERY_A_BEAST_INFO_REQ = 3761;
+	CS_QUERY_A_BEAST_INFO_RES = 3762;
+
+    //天墓禁地神兽上阵协议
+    CS_TMJD_BEAST_IN_BATTLE_REQ = 3763;
+    CS_TMJD_BEAST_IN_BATTLE_RES = 3764;
+
+    //琴箫合奏交互通知
+    CS_MUSIC_GAME_INTERACT_NOTIFY = 3765;
+
+    //天墓禁地抢夺通知协议
+    CS_TMJD_ROB_RESULT_NOTIFY = 3766;
+
+    //申请有缘人的红点通知
+    CS_APPLY_LUCKY_PERSON_NOTIFY = 3767;
+
+    // 获取CP任务完成数据
+    CS_SEVEN_CP_GET_TASK_FINISH_REQ = 3768;
+    CS_SEVEN_CP_GET_TASK_FINISH_RES = 3769;
+
+    //解除cp
+    CS_RELEASE_SEVENCP_REQ = 3770;
+    CS_RELEASE_SEVENCP_RES = 3771;
+
+    	//客户端上报分包资源
+	CS_CLIENT_REPORT_RESOUCE_REQ = 3772;
+	CS_CLIENT_REPORT_RESOUCE_RES = 3773;
+    CS_RELEASE_SEVENCP_NOTIFY = 3774;
+
+	//初见场景小惊喜notify
+	CS_FIRSTMEET_XIAOJINGXI_NOTIFY = 3775;
+
+    //通知游戏状态
+    CS_GROUP_HERO_STATE_NOTIFY = 3776;
+    //武器选择
+    CS_HERO_CHOOSE_WEAPON_REQ = 3777;
+    CS_HERO_CHOOSE_WEAPON_RES = 3778;
+    //技能选择
+    CS_HERO_CHOOSE_SKILL_REQ = 3779;
+    CS_HERO_CHOOSE_SKILL_RES = 3780;
+    //匹配
+    CS_HERO_MATCH_REQ = 3781;
+    CS_HERO_MATCH_RES = 3782;
+    //取消匹配
+    CS_HERO_CANCEL_MATCH_REQ = 3783;
+    CS_HERO_CANCEL_MATCH_RES = 3784;
+    //排行榜请求
+    CS_HERO_RANK_REQ = 3785;
+    CS_HERO_RANK_RES = 3786;
+    //领取挑战奖励
+    CS_HERO_RECEIVE_REWARD_REQ = 3787;
+    CS_HERO_RECEIVE_REWARD_RES = 3788;
+
+    //结算协议
+    CS_HERO_BALANCE_ACOUNT_NOTIFY = 3789;
+
+    //请求报名
+    CS_GROUP_HERO_SIGNUP_REQ = 3790;
+    CS_GROUP_HERO_SIGNUP_RES = 3791;
+
+
+    //分解神兽碎片请求
+    CS_DECOMPOSE_SHENSHOU_PIECE_REQ = 3792;
+    CS_DECOMPOSE_SHENSHOU_PIECE_RES = 3793;
+
+    //灵兽阁物品刷新通知
+    CS_REFRESH_YUAN_LIN_SHOP_NOTIFY = 3794;
+
+    //查询灵兽阁请求
+    CS_QUERY_YUAN_LIN_SHOP_REQ = 3795;
+    CS_QUERY_YUAN_LIN_SHOP_RES = 3796;
+
+    //购买灵兽阁商品请求
+    CS_BUY_YUAN_LIN_SHOP_REQ = 3797;
+    CS_BUY_YUAN_LIN_SHOP_RES = 3798;
+
+    //刷新灵兽阁请求
+    CS_REFRESH_YUAN_LIN_SHOP_REQ = 3799;
+    CS_REFRESH_YUAN_LIN_SHOP_RES = 3800;
+
+	//群英会选择武器后升级技能
+	CS_SKILL_UP_GRADE_IN_GH_REQ = 3801;
+	CS_SKILL_UP_GRADE_IN_GH_RES = 3802;
+
+    //申请双人交互动作请求
+    CS_APPLY_DOUBLE_INTERACTION_REQ = 3803;
+    CS_APPLY_DOUBLE_INTERACTION_RES = 3804;
+
+    //同意/拒绝交互动作请求
+    CS_AGREE_OR_REFUSE_DOUBLE_INTERACTION_REQ = 3805;
+    CS_AGREE_OR_REFUSE_DOUBLE_INTERACTION_RES = 3806;
+
+    //拒绝交互动作请求通知
+    CS_REFUSE_DOUBLE_INTERACTION_NOTIFY = 3807;
+    //同意交互动作请求通知
+    CS_AGREE_DOUBLE_INTERACTION_NOTIFY = 3808;
+
+    //退出交互动作请求
+    CS_QUIT_DOUBLE_INTERACTION_REQ = 3809;
+    CS_QUIT_DOUBLE_INTERACTION_RES = 3810;
+
+    //通知视野内玩家动作交互视野
+    CS_IN_VIEW_DOUBLE_INTERACTION_NOTIFY = 3811;
+    //通知对方退出了交互动作
+    CS_QUIT_DOUBLE_INTERACTION_NOTIFY = 3812;
+
+    //七宗罪小任务通知
+    CS_LDMJ_TASK_INFO_NOTIFY = 3813;
+
+    //七宗罪小任务请求
+    CS_LDMJ_TASK_INFO_REQ = 3814;
+    CS_LDMJ_TASK_INFO_RES = 3815;
+
+    //获取师徒信息
+    CS_PULL_MASTER_RELA_REQ = 3816;
+    CS_PULL_MASTER_RELA_RES = 3817;
+
+    //拜师、收徒请求
+    CS_ADD_MASTER_RELA_REQ = 3818;
+    CS_ADD_MASTER_RELA_RES = 3819;
+
+    //意拜师、收徒请求
+    CS_AGREE_MASTER_RELA_REQ = 3820;
+    CS_AGREE_MASTER_RELA_RES = 3821;
+
+    //双人互动邀请通知
+    CS_INVITE_DOUBLE_INTERACTION_NOTIFY = 3822;
+	//下发运行活动配置文件
+	CS_OPERATE_ACT_DATA_NOTIFY = 3823;
+    //野外修炼引导
+    CS_HUNT_GUIDE_ALL_MONSTER_DEAD_NOTIFY = 3824;
+
+    //拜师、收徒通知
+    CS_ADD_MASTER_RELA_NOTIFY = 3825;
+    CS_AGREE_MASTER_RELA_NOTIFY = 3826;
+
+	//申请下发运营活动配置
+	CS_OPERATE_ACT_DATA_REQ = 3827;
+	CS_OPERATE_ACT_DATA_RES = 3828;
+    //武器竞技冠军拔旗
+    CS_WEAPONFIGHT_GET_WIN_FLAG_REQ = 3829;
+    CS_WEAPONFIGHT_GET_WIN_FLAG_RES = 3830;
+
+    // 同步战斗开始信息通知
+    CS_SYNC_FIGHT_START_NOTIFY = 3831;
+
+    //天墓禁地神力数据保存协议
+    CS_SAVE_TMJD_SHENLI_DATA_REQ = 3832;
+    CS_SAVE_TMJD_SHENLI_DATA_RES = 3833;
+
+    //活动结束，玩家请求天墓禁地排行榜数据
+    CS_LOOK_TMJD_RANK_DATA_REQ = 3834;
+    CS_LOOK_TMJD_RANK_DATA_RES = 3835;
+    //上新特惠信息请求
+    CS_NEW_SPECIAL_BENEFITS_INFO_REQ = 3836;
+    CS_NEW_SPECIAL_BENEFITS_INFO_RES = 3837;
+    //购买成功通知
+    BUY_NEW_SPECIAL_BENEFITS_SUCCESS_NOTIFY = 3838;
+
+
+    //获取离线消息
+    CS_GET_OFFLINE_MSG_REQ = 3839;
+    CS_GET_OFFLINE_MSG_RES = 3840;
+
+    //提交消息（语音）
+    CS_SUBMIT_MSG_REQ = 3841;
+    CS_SUBMIT_MSG_RES = 3842;
+    //有缘人进度步骤通知
+    CS_LUCKY_STEP_NOTIFY = 3843;
+
+    //野外修炼引导答题
+    CS_HUNT_GUIDE_ANSWER_QUESTION_REQ = 3844;
+    CS_HUNT_GUIDE_ANSWER_QUESTION_RES = 3845;
+
+    // 小红点变更通知
+    CS_CP_INFO_NOTIFY = 3846;
+    //同步双方伤害
+    CS_SYN_SUB_HP_NOTIFY = 3847;
+
+    //攻城战弹窗提示
+    CS_TERRITORY_MSG_NOTIFY = 3848;
+
+    //拉取交易中心所有数据
+    CS_GET_TRADE_CENTER_DATA_REQ = 3849;
+    CS_GET_TRADE_CENTER_DATA_RES = 3850;
+
+    //交易中心购买
+    CS_BUY_TRADE_CENTER_REQ = 3851;
+    CS_BUY_TRADE_CENTER_RES = 3852;
+
+    //交易中心出售
+    CS_SALE_TRADE_CENTER_REQ = 3853;
+    CS_SALE_TRADE_CENTER_RES = 3854;
+
+    //上新特惠活动开启通知
+    CS_NEW_SPECIAL_ACTIVITY_START_NOTIFY = 3855;
+    CS_NEW_SPECIAL_ACTIVITY_END_NOTIFY   = 3856;
+
+    //开服累充活动开启通知
+    CS_ADD_UP_RECHARGE_START_NOTIFY = 3857;
+    CS_ADD_UP_RECHARGE_END_NOTIFY   = 3858;
+
+	//CS运营活动信息统一请求协议
+	CS_OPERATE_ACTIVITY_INFO_REQ = 3859;
+	CS_OPERATE_ACTIVITY_INFO_RES = 3860;
+
+	//活动提前不使用了
+	//CS_ACTIVITY_PRE_END_NOTIFY = 3861;
+
+    //幸运转盘请求模型增长表
+    CS_GET_LUCK_WHEEL_MODEL_GROWTH_REQ = 3862;
+    CS_GET_LUCK_WHEEL_MODEL_GROWTH_RES = 3863;
+
+    //136礼包一键购买活动开启通知
+    DAILY_PACKET_ACTIVITY_START_NOTIFY = 3864;
+
+
+    //一键升级技能
+	CS_SKLL_ONE_KEY_UP_LEVEL_REQ = 3865;
+	CS_SKLL_ONE_KEY_UP_LEVEL_RES = 3866;
+
+    //获取英雄挑战奖励
+    CS_GET_HERO_CHALLENGE_REWARD_REQ = 3867;
+    CS_GET_HERO_CHALLENGE_REWARD_RES = 3868;
+
+    //快速匹配超时通知客户端
+    CS_AUTO_MATCH_ROBOT_NOTIFY = 3869;
+
+    //进入机器人填充的副本
+    CS_AUTO_MATCH_ROBOT_REQ    = 3870;
+
+    // 活动未开始同通知
+    CS_WEAPONFIGHT_NOT_OPEN_NOTIFY = 3871;
+
+    // 队伍加入快速匹配
+    CS_TEAM_AUTO_MATCH_REQ = 3872;
+    CS_TEAM_AUTO_MATCH_RES = 3873;
+
+    //取消队伍快速匹配
+    CS_CANCEL_TEAM_AUTO_MATCH_REQ = 3875;
+    CS_CANCEL_TEAM_AUTO_MATCH_RES = 3876;
+
+    // 拉取支付商品列表配置
+     CS_PAY_GET_GOODS_LIST_REQ = 4000;
+     CS_PAY_GET_GOODS_LIST_RES = 4001;
+
+     // 玩家设置图像
+     CS_REPORT_ROLE_PIC_REQ = 4002;
+     CS_REPORT_ROLE_PIC_RES = 4003;
+
+     // 玩家获得图像
+     CS_GET_ROLE_PIC_REQ = 4004;
+     CS_GET_ROLE_PIC_RES = 4005;
+
+     // 重置相关体验活动次数
+     CS_RESET_ACTIVITY_EXPERIENCE_NUM_REQ = 4006;
+     CS_RESET_ACTIVITY_EXPERIENCE_NUM_RES = 4007;
+
+     //帮会红包被领完
+     CS_FAC_RED_PACKET_CLOSE_NOTIFY = 4008;
+
+    //充值返利请求数据
+    CS_RECHARGE_REBATE_DATA_REQ = 4009;
+	//充值返利请求数据返回
+	CS_RECHARGE_REBATE_DATA_RES = 4010;
+    //领取充值返利请求
+    CS_RECEIVE_RECHARGE_REBATE_REQ = 4011;
+    //领取充值返利返回
+    CS_RECEIVE_RECHARGE_REBATE_RES = 4012;
+
+
+    //获取一元礼包信息
+    CS_GET_ONE_RMB_GIFT_INFO_REQ = 4013;
+    CS_GET_ONE_RMB_GIFT_INFO_RES = 4014;
+    //领取一元礼包奖励
+    CS_GET_ONE_RMB_GIFT_AWARD_REQ = 4015;
+    CS_GET_ONE_RMB_GIFT_AWARD_RES = 4016;
+
+    //交易中心拉取单个商品信息
+    CS_GET_SINGLE_TREADE_CENTER_DATA_REQ = 4017;
+    CS_GET_SINGLE_TREADE_CENTER_DATA_RES = 4018;
+
+    //交易中心拉取列表id
+    CS_GET_TRADE_CENTER_IDS_REQ = 4019;
+    CS_GET_TRADE_CENTER_IDS_RES = 4020;
+
+    //加测到玩家加速，通知客户端进行处理
+    ACCELERATE_WARN_NOTIFY = 4021;
+
+    //天幕技能效果通知
+    CS_FORMATION_SKILL_EFFECT_NOTIFY = 4022;
+
+    //一元礼包信息Notify
+    CS_ONE_RMB_GIFT_INFO_NOTIFY = 4023;
+
+    //刷新天墓禁地神兽阵位信息
+    CS_REFRESH_SKY_BEAST_POSITION_REQ = 4024;
+    CS_REFRESH_SKY_BEAST_POSITION_RES = 4025;
+
+    //新天墓禁地，神兽阵位信息通知
+    CS_NEW_SKY_FALL_BEAST_POSITION_NOTIFY = 4026;
+	//推送运营活动神兽碎片信息
+	CS_OPA_MONSTERPIECE_INFO_NOTIFY = 4027;
+
+	//请求运营活动神兽碎片排行榜
+	CS_GET_OPA_MONSTERPIECE_RANK_REQ = 4028;
+	CS_GET_OPA_MONSTERPIECE_RANK_RES = 4029;
+	//领取运营活动神兽碎片宝箱
+	CS_GET_OPA_MONSTERPIECE_BOX_REQ = 4030;
+	CS_GET_OPA_MONSTERPIECE_BOX_RES = 4031;
+
+	//请求运营活动神兽碎片面板信息
+	CS_GET_OPA_MONSTERPIECE_INFO_REQ = 4032;
+	CS_GET_OPA_MONSTERPIECE_INFO_RES = 4033;
+
+
+    //每日累充面板信息请求
+    CS_DAILY_RECHARGE_INFO_REQ = 4034;
+    CS_DAILY_RECHARGE_INFO_RES = 4035;
+    //每日累充奖励领取请求
+    CS_DAILY_RECHARGE_REWARD_REQ = 4036;
+    CS_DAILY_RECHARGE_REWARD_RES = 4037;
+    //达到奖励领取通知
+    CS_DAILY_RECHARGE_REACH_NOTIFY = 4038;
+    //活动开始通知
+    CS_DAILY_RECHARGE_START_NOTIFY = 4039;
+    //活动结束通知
+    CS_DAILY_RECHARGE_END_NOTIFY = 4040;
+	//请求欢乐连充面板信息
+	CS_GET_OPA_HAPPYRECHARGE_INFO_REQ = 4041;
+	CS_GET_OPA_HAPPYRECHARGE_INFO_RES = 4042;
+
+    //玩家操作新天墓攻防位神兽的请求
+    CS_OPERATE_SKY_FALL_BEAST_POSITION_REQ = 4043;
+    CS_OPERATE_SKY_FALL_BEAST_POSITION_RES = 4044;
+	//欢乐连充
+	CS_OPA_HAPPYRECHARGE_INFO_NOTIFY = 4045;
+    //获取聊天表现信息
+    CS_GET_CHAT_PERFORMANCE_INFO_REQ = 4046;
+    CS_GET_CHAT_PERFORMANCE_INFO_RES = 4047;
+    //获得聊天表现红点通知
+    CS_CHAT_PERFORMANCE_RED_POINT_NOTIFY = 4048;
+    //使用聊天表现
+    CS_USE_CHAT_PERFORMANCE_REQ = 4049;
+    CS_USE_CHAT_PERFORMANCE_RES = 4050;
+    //移除聊天表现设置红点
+    CS_REMOVE_CHAT_PERFORMANCE_RED_POINT_REQ = 4051;
+    CS_REMOVE_CHAT_PERFORMANCE_RED_POINT_RES = 4052;
+
+    //运营活动幸运宝箱
+    CS_GET_LUCKYBOX_INFO_REQ = 4053;
+    CS_GET_LUCKYBOX_INFO_RES = 4054;
+
+
+	//领取欢乐连充奖励
+	CS_GET_OPA_HAPPYRECHARGE_AWARD_REQ = 4055;
+	CS_GET_OPA_HAPPYRECHARGE_AWARD_RES = 4056;
+
+
+    // 匹配设置保存响应
+    CS_MATCH_SETTING_SAVE_REQ = 4057;
+    CS_MATCH_SETTING_SAVE_RES = 4058;
+
+    //解除有缘人
+    CS_RELEASE_SEVEN_CP_LUCKY_PERSON_REQ = 4059;
+    CS_RELEASE_SEVEN_CP_LUCKY_PERSON_RES = 4060;
+
+    //战斗力比较数据请求
+    CS_COMPARE_FIGHT_DATA_REQ = 4061;
+    //战斗力比较数据返回
+    CS_COMPARE_FIGHT_DATA_RES = 4062;
+
+    //当前userid创角Notify
+    CS_IF_FIRST_CREATE_ROLE_NOTIFY = 4063;
+    //当前userid充值Notify
+    CS_IF_FIRST_PAY_NOTIFY = 4064;
+
+    //奋起直追的购买战力信息请求
+    CS_BUY_FIGHT_INFO_REQ = 4065;
+    CS_BUY_FIGHT_INFO_RES = 4066;
+    //奋起直追的购买战力成功通知
+    CS_BUY_FIGHT_SUCCESS_NOTIFY = 4067;
+    //关闭奋起直追的购买战力入口通知
+    CS_BUY_FIGHT_END_NOTIFY = 4068;
+    //追赶战力请求
+    CS_ZHUI_GAN_ZHAN_LI_REQ = 4069;
+    CS_ZHUI_GAN_ZHAN_LI_RES = 4070;
+
+    //首冲倒计时
+    CS_FIRST_PAY_CD_NOTIFY = 4071;
+    //玩家在天墓战斗阶段的死亡通知
+    CS_SKY_FALL_FIGHT_DISAPPEAR_NOTIFY = 4072;
+
+    //登录大礼包结束协议
+    CS_EVERY_DAY_LOGIN_START_NOTIFY = 4073;
+    CS_EVERY_DAY_LOGIN_END_NOTIFY   = 4074;
+
+    /* ---- 幸运扭蛋 ---- */
+    //信息
+    CS_LUCK_TWISTED_EGG_INFO_REQ = 4075;
+    CS_LUCK_TWISTED_EGG_INFO_RES = 4076;
+
+    CS_DRAW_LUCK_TWISTED_EGG_REQ = 4077;
+    CS_DRAW_LUCK_TWISTED_EGG_RES = 4078;
+
+    CS_GET_LUCK_EGG_SPE_AWARD_REQ = 4079;
+    CS_GET_LUCK_EGG_SPE_AWARD_RES = 4080;
+
+    CS_LUCK_TWISTED_EGG_END_START_NOTIFY = 4081;
+    CS_REFRESH_LUCK_TWISTED_FREE_DRAW_NOTIFY = 4082;
+
+    //进入小游戏场景
+    CS_ENTER_SMALL_GAME_REQ = 4083;
+    CS_ENTER_SMALL_GAME_RES = 4084;
+
+
+    /* ---- 幸运扭蛋 ---- */
+
+    CS_GET_LUCK_TWISTED_MODEL_GROWTH_REQ = 4085;
+    CS_GET_LUCK_TWISTED_MODEL_GROWTH_RES = 4086;
+
+     //英雄挑战获取活动面板挑战次数
+    CS_GET_HERO_CHALLENGE_TIMES_REQ = 4091;
+    CS_GET_HERO_CHALLENGE_TIMES_RES = 4092;
+
+	//通天塔等待场景人数下发
+	CS_TTT_WAITSCENE_PLAYER_COUNT_NOTIFY = 4093;
+
+
+
+
+    //获取登陆基金活动信息
+    CS_GET_LOGIN_FUND_INFO_REQ = 4094;
+    CS_GET_LOGIN_FUND_INFO_RES = 4095;
+
+    //购买活动通知
+    CS_BUY_ACT_SUCCESS_NOTIFY = 4096;
+
+    //领取登陆基金奖励
+    CS_GET_LOGIN_FUND_REWARD_REQ = 4097;
+    CS_GET_LOGIN_FUND_REWARD_RES = 4098;
+
+    //师徒推荐列表
+    CS_FIND_MASTER_RELA_REQ = 4099;
+    CS_FIND_MASTER_RELA_RES = 4100;
+    //申请列表
+    CS_GET_MASTER_RELA_APPLY_LIST_REQ = 4101;
+    CS_GET_MASTER_RELA_APPLY_LIST_RES = 4102;
+
+	//请求福星阁面板信息
+	CS_GET_FUXINGGE_INFO_REQ = 4103;
+	CS_GET_FUXINGGE_INFO_RES = 4104;
+
+	//福星阁数据下发notify
+	CS_FUXINGGE_INFO_NOTIFY = 4105;
+
+	//改变福星阁状态
+	CS_CHANGE_FUXINGGE_STATUS_REQ = 4106;
+	CS_CHANGE_FUXINGGE_STATUS_RES = 4107;
+
+ /*----------抽取时装-----------*/
+    CS_GET_DRAW_FASHION_DRESS_INFO_REQ = 4108;
+    CS_GET_DRAW_FASHION_DRESS_INFO_RES = 4109;
+
+    CS_DRAW_FASHION_DRESS_REQ = 4110;
+    CS_DRAW_FASHION_DRESS_RES = 4111;
+
+    CS_GET_DRAW_FASHION_DRESS_SPE_AWARD_REQ = 4112;
+    CS_GET_DRAW_FASHION_DRESS_SPE_AWARD_RES = 4113;
+
+    CS_DRAW_FASHION_DRESS_END_START_NOTIFY = 4114;
+    CS_REFRESH_DRAW_FASHION_DRESS_FREE_NOTIFY = 4115;
+
+    CS_GET_DRAW_FASHION_DRESS_MODEL_GROWTH_REQ = 4116;
+    CS_GET_DRAW_FASHION_DRESS_MODEL_GROWTH_RES = 4117;
+
+    /*----------抽取时装-----------*/
+
+	//领取福星阁铜钱
+	CS_GET_FUXINGGE_COPPER_REQ = 4118;
+	CS_GET_FUXINGGE_COPPER_RES = 4119;
+
+    //解锁魅力等级
+    CS_PLAYER_UNLOCKED_CHARM_LEVEL_REQ = 4120;
+    CS_PLAYER_UNLOCKED_CHARM_LEVEL_RES = 4121;
+
+    //单人动作请求
+    CS_SINGLE_ACTION_REQ = 4122;
+    CS_SINGLE_ACTION_RES = 4123;
+    //退出单人动作请求
+    CS_QUIT_SINGLE_ACTION_REQ = 4124;
+    CS_QUIT_SINGLE_ACTION_RES = 4125;
+
+    //恩爱度通知
+    CS_CP_INTIMACY_NOTIFY = 4126;
+
+    //获取恩爱度奖励信息
+    CS_GET_CP_INTIMACY_REWARD_INFO_REQ = 4127;
+    CS_GET_CP_INTIMACY_REWARD_INFO_RES = 4128;
+
+    //获取恩爱度奖励
+    CS_GET_CP_INTIMACY_REWARD_REQ = 4129;
+    CS_GET_CP_INTIMACY_REWARD_RES = 4130;
+
+
+    //更新收徒信息
+    CS_UPDATE_RECRUIT_REQ = 4131;
+    CS_UPDATE_RECRUIT_RES = 4132;
+
+    /*------------神兽升星/宝石镶嵌 战力排行榜--------------*/
+
+    //神兽升阶/宝石镶嵌 战力活动
+    CS_SHEN_SHOU_LING_SHI_RANK_ACTIVITY_REQ = 4133;
+    CS_SHEN_SHOU_LING_SHI_RANK_ACTIVITY_RES = 4134;
+
+    //神兽升阶/宝石镶嵌 战力排行榜
+    CS_SHEN_SHOU_LING_SHI_RANK_REQ = 4135;
+    CS_SHEN_SHOU_LING_SHI_RANK_RES = 4136;
+
+    //领取神兽升阶/宝石镶嵌 活动奖励
+    CS_GET_SHEN_SHOU_LING_SHI_REWARD_REQ = 4137;
+    CS_GET_SHEN_SHOU_LING_SHI_REWARD_RES = 4138;
+
+    /*------------神兽升星/宝石镶嵌 战力排行榜end-----------*/
+
+    //师徒任务汇报
+    CS_MASTER_TASK_REPORT_REQ = 4139;
+    CS_MASTER_TASK_REPORT_RES = 4140;
+
+
+    //添加黑名单
+    CS_ADD_BLACK_LIST_REQ = 4141;
+    CS_ADD_BLACK_LIST_RES = 4142;
+    //删除黑名单
+    CS_DEL_BLACK_LIST_REQ = 4143;
+    CS_DEL_BLACK_LIST_RES = 4144;
+
+    /* ----------CP答题-----------*/
+    //设置是否在答题区域
+    CS_SET_IN_CP_QUESTION_ZONE_REQ = 4145;
+    CS_SET_IN_CP_QUESTION_ZONE_RES = 4146;
+
+    //答题信息notify
+    CS_CP_QUESTION_INFO_NOTIFY = 4147;
+
+    //请求参加答题
+    CS_CP_QUESTION_INFO_REQ = 4148;
+    CS_CP_QUESTION_INFO_RES = 4149;
+
+    //回答问题
+    CS_ANSWER_CP_QUESTION_REQ = 4150;
+    CS_ANSWER_CP_QUESTION_RES = 4151;
+
+    //一方回答之后给另一方的NOTIFY
+    CS_CP_ANSWER_QUESTION_NOTIFY = 4152;
+
+    //答题超时 或者双方均已作答 结算面板
+    CS_SHOW_CP_QUESTION_RESULT_NOTIFY = 4153;
+    /* ----------CP答题END--------*/
+
+    //删除申请列表
+    CS_DEL_APPLY_LIST_REQ = 4156;
+    CS_DEL_APPLY_LIST_RES = 4157;
+
+    //神兽继承
+    CS_BEAST_INHERIT_REQ = 4158;
+    CS_BEAST_INHERIT_RES = 4159;
+
+    /*-------------cp流星雨 begin-----------*/
+    CS_ENTER_METEOR_AREA_REQ = 4160;
+    CS_ENTER_METEOR_AREA_RES = 4161;
+    CS_ENTER_METEOR_AREA_NOTIFY = 4162;
+    CS_BOTH_ENTER_METEOR_AREA_NOTIFY = 4163;
+
+    CS_DO_WISH_REQ = 4164;
+    CS_DO_WISH_RES = 4165;
+    CS_DO_WISH_NOTIFY = 4166;
+
+    CS_SEND_BARRAGE_REQ = 4167;
+    CS_SEND_BARRAGE_RES = 4168;
+    SC_SEND_BARRAGE_NOTIFY = 4169;
+
+    /*-------------cp流星雨 end-----------*/
+
+    CS_BUY_FASHION_DRESS_MONEY_INFO_REQ = 4170;
+    CS_BUY_FASHION_DRESS_MONEY_INFO_RES = 4171;
+
+    CS_BUY_DAOBI_NOTIFY = 4172;
+
+    //任选礼包
+    CS_PICK_FREE_PICK_REQ = 4173;
+    CS_PICK_FREE_PICK_RES = 4174;
+
+    //师徒传功请求协议
+    CS_MASTER_TRAIN_REQ = 4175;
+    CS_MASTER_TRAIN_RES = 4176;
+
+    CS_MASTER_TRAIN_REPLY_REQ = 4177;
+    CS_MASTER_TRAIN_REPLY_RES = 4178;
+
+    //主播聊天(由于聊天协议已经过于复杂，主播不走聊天协议)
+    CS_CHAT_RADIO_REQ = 4183;
+    CS_CHAT_RADIO_RES = 4184;
+    //获取登陆基金活动信息
+    CS_GET_LOGIN_FUND2_INFO_REQ = 4202;
+    CS_GET_LOGIN_FUND2_INFO_RES = 4203;
+
+    //领取登陆基金奖励
+    CS_GET_LOGIN_FUND2_REWARD_REQ = 4204;
+    CS_GET_LOGIN_FUND2_REWARD_RES = 4205;
+
+    //节日登录活动
+    CS_GET_SPECIAL_DAY_LOGIN_INFO_REQ = 4179;
+    CS_GET_SPECIAL_DAY_LOGIN_INFO_RES = 4180;
+
+    //节日登录奖励领取
+    CS_GET_SPECIAL_DAY_LOGIN_REWARD_REQ = 4181;
+    CS_GET_SPECIAL_DAY_LOGIN_REWARD_RES = 4182;
+
+
+   //CP答题重置
+    CS_RESET_CP_QUESTION_REQ = 4185;
+    CS_RESET_CP_QUESTION_RES = 4186;
+
+    //通知进入庄周第五层
+    CS_ENTER_ZHUANG_ZHOU_FIVE_LEVEL_NOTIFY = 4187;
+
+    //进入庄周第五层
+    CS_ENTER_ZHUANG_ZHOU_FIVE_LEVEL_REQ = 4188;
+    CS_ENTER_ZHUANG_ZHOU_FIVE_LEVEL_RES = 4189;
+
+
+    //拉取cp任务的NOTIFY
+    CS_REFRESH_CP_QUESTION_TASK_NOTIFY= 4190;
+
+
+
+    /* ------ 定时转盘 ------ */
+    //定时转盘信息
+    CS_GET_DATE_WHEEL_INFO_REQ = 4191;
+    CS_GET_DATE_WHEEL_INFO_RES = 4192;
+    //定时转盘模型增长信息
+    CS_GET_DATE_WHEEL_MODEL_GROWTH_REQ = 4193;
+    CS_GET_DATE_WHEEL_MODEL_GROWTH_RES = 4194;
+    //抽取请求
+    CS_DRAW_DATE_WHEEL_REQ = 4195;
+    CS_DRAW_DATE_WHEEL_RES = 4196;
+    //请求奖励
+    CS_GET_DATE_AWARD_REQ = 4197;
+    CS_GET_DATE_AWARD_RES = 4198;
+    //结束 刷新 开始notify们
+    CS_DATE_WHEEL_END_NOTIFY = 4199;
+    CS_REFRESH_EVERYDAY_DATE_DRAW_NOTIFY = 4200;
+    CS_DATE_WHEEL_OPEN_NOTIFY = 4201;
+    /* ------ 定时转盘END ------*/
+
+    //师徒关系解除相关
+    CS_MASTER_RELATION_TERMINATION_REQ = 4206;
+    CS_MASTER_RELATION_TERMINATION_RES = 4207;
+
+	//拉取通天塔排行榜信息
+	CS_GET_TTT_RANK_INFO_REQ = 4210;
+	CS_GET_TTT_RANK_INFO_RES = 4211;
+    //徒赠送礼物
+    CS_MASTER_GIVE_GIFT_REQ = 4208;
+    CS_MASTER_GIVE_GIFT_RES = 4209;
+
+    //师父带徒弟出师
+    CS_MASTER_OUT_REQ = 4212;
+    CS_MASTER_OUT_RES = 4213;
+    //通知徒弟出师
+    CS_MASTER_OUT_NOTIFY = 4214;
+
+    //上报是否前往师父身边的结果
+    CS_REPORT_GOTO_MASTER_SIDE_REQ = 4215;
+    CS_REPORT_GOTO_MASTER_SIDE_RES = 4216;
+    //通知师父 徒弟是否前往
+    CS_REPORT_GOTO_MASTER_SIDE_NOTIFY = 4217;
+    //徒弟出师确认请求
+    CS_MASTER_OUT_MAKE_SURE_REQ = 4218;
+    CS_MASTER_OUT_MAKE_SURE_RES = 4219;
+    //出师结果通知
+    CS_MASTER_RESULT_NOTIFY = 4220;
+
+    //布置师徒任务
+    CS_MASTER_AFTER_TASK_ARRANGE_REQ = 4221;
+    CS_MASTER_AFTER_TASK_ARRANGE_RES = 4222;
+    //师徒关系解除过程中状态变更通知
+    CS_MASTER_RELA_DATA_CHANGE_NOTIFY = 4223;
+
+    //提醒师傅布置任务
+    CS_GRADUATE_REMIND_REQ = 4224;
+    CS_GRADUATE_REMIND_RES = 4225;
+
+
+    //定时豪礼
+    //获取下次可领取时间
+    CS_LIMIT_TIME_LOGIN_REWARD_TIME_NOTIFY = 4226;
+
+    //查看定时豪礼面板信息
+    CS_GET_LIMIT_TIME_LOGIN_INFO_REQ = 4227;
+    CS_GET_LIMIT_TIME_LOGIN_INFO_RES = 4228;
+
+    //获取定时豪礼奖励
+    CS_GET_LIMIT_TIME_LOGIN_REWARD_REQ = 4229;
+    CS_GET_LIMIT_TIME_LOGIN_REWARD_RES = 4230;
+
+    //群英会通知队友选武器
+    CS_HERO_CHOICE_WEAPON_NOTIFY = 4231;
+
+    //添加师徒关系成功Notify
+    ADD_MASTER_RELA_SUCCESS_NOTIFY = 4232;
+
+    //帮会改名
+    CS_CHANGE_FACTION_NAME_REQ = 4233;
+    CS_CHANGE_FACTION_NAME_RES = 4234;
+    //群英会通知双方总伤害
+    CS_GROUP_HERO_BOTH_HURT_NOTIFY = 4235;
+    //群英会活动结束通知战斗中玩家
+    CS_GROUP_HERO_ROOM_FIGHT_NOTIFY = 4236;
+    //群英会战斗场景退回等待区请求
+    CS_GROUP_HERO_RETURN_WAIT_SCENE_REQ = 4237;
+    //群英会战斗场景退回等待区返回
+    CS_GROUP_HERO_RETURN_WAIT_SCENE_RES = 4238;
+    //群英会技能修改通知
+    CS_GROUP_HERO_SKILL_NOTIFY = 4239;
+    //群英会奖励奖态通知
+    CS_GROUP_HERO_REWARD_NOTIFY = 4240;
+
+    // 获取经验表数据
+    CS_GET_EXP_DATA_REQ = 4241;
+    CS_GET_EXP_DATA_RES = 4242;
+
+    //群英会匹配通知
+    CS_GROUP_HERO_MATCH_NOTIFY = 4243;
+    //群英会取消匹配通知
+    CS_GROUP_HERO_CANCEL_MATCH_NOTIFY = 4244;
+
+    //在线托管相关协议
+    CS_ONLINE_DEPOSIT_REQ = 4245;
+    CS_ONLINE_DEPOSIT_RES = 4246;
+
+	//拉取神兽升星碎片兑换面板信息
+	CS_GET_OPA_MPC_INFO_REQ = 4248;
+	CS_GET_OPA_MPC_INFO_RES = 4249;
+
+
+	//兑换神兽升星碎片
+	CS_CHANGE_MPC_REQ = 4250;
+	CS_CHANGE_MPC_RES = 4251;
+
+	//神兽升星碎片信息推送
+	CS_OPA_MPC_INFO_NOTIFY = 4252;
+
+    //获取组队本积分兑换活动信息
+    CS_GET_TEAM_ROOM_SCORE_EXCHANGE_INFO_REQ = 4262;
+    CS_GET_TEAM_ROOM_SCORE_EXCHANGE_INFO_RES = 4263;
+    //获取组队本积分兑换活动奖励
+    CS_GET_TEAM_ROOM_SCORE_EXCHANGE_REWARD_REQ = 4264;
+    CS_GET_TEAM_ROOM_SCORE_EXCHANGE_REWARD_RES = 4265;
+
+
+    //玩家到达羽翼开放等级，会自动穿上羽翼，通知客户端
+    CS_OPEN_WING_SYSTEM_NOTIFY = 4253;
+    //查询羽翼数据
+    CS_QUERY_WING_DATA_REQ     = 4254;
+    CS_QUERY_WING_DATA_RES     = 4255;
+    //羽翼进阶请求
+    CS_ADVANCE_WING_REQ        = 4256;
+    CS_ADVANCE_WING_RES        = 4257;
+
+    //幻化---激活活动羽翼
+    CS_ACTIVE_ACTIVITY_WING_REQ = 4258;
+    CS_ACTIVE_ACTIVITY_WING_RES = 4259;
+    //幻化---穿戴/卸下
+    CS_PROC_WING_REQ = 4260;
+    CS_PROC_WING_RES = 4261;
+
+    //翅膀功能开放后，老玩家第一次登陆时同步羽翼信息
+    OLD_PLAYER_SYN_WING_OPENINFO_NOTIFY = 4266;
+
+
+    //万圣节活动
+    CS_DELETE_HALLO_BUFF_REQ = 4267;
+    CS_DELETE_HALLO_BUFF_RES = 4268;
+
+    //老玩家请求翅膀引导信息
+    CS_PLAYER_SYN_WING_OPEN_STATUS_REQ = 4269;
+    CS_PLAYER_SYN_WING_OPEN_STATUS_RES = 4270;
+
+    //羽翼系统---是否显示翅膀
+    CS_WING_SYSTEM_SHOW_WING_MARK_REQ = 4271;
+    CS_WING_SYSTEM_SHOW_WING_MARK_RES = 4272;
+
+    //勾选羽翼自动进阶按钮请求
+    CS_OPERATE_WING_AUTOMATIC_STEP_REQ = 4273;
+    CS_OPERATE_WING_AUTOMATIC_STEP_RES = 4274;
+    //创建战队请求
+    CS_CREATE_CHALLENGE_TEAM_REQ = 4275;
+    CS_CREATE_CHALLENGE_TEAM_RES = 4276;
+    //组入队员请求
+    CS_CALL_IN_CHALLENGE_TEAM_REQ = 4277;
+    CS_CALL_IN_CHALLENGE_TEAM_RES = 4278;
+    //队员加入战队通知
+    CS_JOIN_CHALLENGE_TEAM_NOTIFY = 4279;
+    //召集战队通知
+    CS_CALL_IN_CHALLENGE_TEAM_NOTIFY = 4280;
+    //退出战队请求
+    CS_QUIT_CHALLENGE_TEAM_REQ = 4281;
+    CS_QUIT_CHALLENGE_TEAM_RES = 4282;
+    //队友离开战队通知
+    CS_LEAVE_CHALLENGE_TEAM_NOTIFY = 4283;
+
+    //是否同意加入战队
+    CS_IS_AGREE_JOIN_CHALLENGE_TEAM_REQ = 4288;
+    CS_IS_AGREE_JOIN_CHALLENGE_TEAM_RES = 4289;
+    CS_SELECT_CHALLENGE_TEAM_DATA_REQ = 4290;
+    CS_SELECT_CHALLENGE_TEAM_DATA_RES = 4291;
+
+	//群英会发送战绩请求
+    CS_GROUP_HERO_SEND_RECORD_REQ = 4284;
+    //群英会发送战绩返回
+    CS_GROUP_HERO_SEND_RECORD_RES = 4285;
+    //群英会战斗数据请求
+    CS_GROUP_HERO_DATA_REQ = 4286;
+    //群英会战斗数据返回
+    CS_GROUP_HERO_DATA_RES = 4287;
+
+    //羽翼注魂请求协议
+    CS_WING_INJECT_SOUL_REQ = 4292;
+    CS_WING_INJECT_SOUL_RES = 4293;
+
+    //等待场景--比赛信息notify
+    CS_CHALLENGEINFO_NOTIFY = 4294;
+
+    //华山论剑战斗信息通知
+    CS_ALL_HUA_SHAN_COMPT_FIGHT_INFO_NOTIFY = 4295;
+    //华山论剑战斗阶段刷新信息通知
+    CS_REFRESH_SHAN_COMPT_FIGHT_INFO_NOTIFY = 4296;
+    //查询战队信息
+    CS_GET_CHALLENGE_TEAM_MEMBER_INFO_REQ = 4297;
+    CS_GET_CHALLENGE_TEAM_MEMBER_INFO_RES = 4298;
+    //华山论剑积分赛阶段通知
+    CS_HUA_SHAN_COMPT_STATE_NOTIFY = 4304;
+    //华山论剑排行榜
+    CS_CHALLENGE_TEAM_RANK_NOTIFY = 4307;
+    //山论剑战斗信息(req/res)
+    CS_ALL_HUA_SHAN_COMPT_FIGHT_INFO_REQ = 4308;
+    CS_ALL_HUA_SHAN_COMPT_FIGHT_INFO_RES = 4309;
+
+    //江湖荣誉谱主界面
+    CS_GET_WORLD_HONOR_RANK_INFO_REQ = 4310;
+    CS_GET_WORLD_HONOR_RANK_INFO_RES = 4311;
+
+    //荣誉谱（段位>=白金）
+    CS_GET_WORLD_HONOR_PLATINUM_RANK_REQ = 4312;
+    CS_GET_WORLD_HONOR_PLATINUM_RANK_RES = 4313;
+
+    //华山论剑队友神兽刷新
+    CS_HUA_SHAN_COMPET_TEAM_BEAST_NOTIFY = 4314;
+
+    //华山论剑:积分赛排行请求
+    CS_CHALLENGE_TEAM_RANK_REQ = 4315;
+    CS_CHALLENGE_TEAM_RANK_RES = 4316;
+
+
+    //荣誉谱：通知客户端段位发生变化
+    CS_WORLD_HONOR_RANK_LEVEL_UP_NOTIFY = 4317;
+
+
+
+
+    //性转
+    CS_CHANGE_MODEL_REQ = 4318;
+    CS_CHANGE_MODEL_RES = 4319;
+
+    //荣誉谱灰度发布
+    CS_CHECK_WORLD_HONOR_RANK_IF_OPEN_REQ = 4320;
+    CS_CHECK_WORLD_HONOR_RANK_IF_OPEN_RES = 4321;
+
+    //查询自己是否有队伍
+    CS_QUERY_MYSELF_ISTEAM_REQ = 4322;
+    CS_QUERY_MYSELF_ISTEAM_RES = 4323;
+	//华山论剑聚集神兽
+	CS_HUASHAN_DISCUSS_SWORD_COLLECT_MONSTER_REQ = 4324;
+	CS_HUASHAN_DISCUSS_SWORD_COLLECT_MONSTER_RES = 4325;
+
+    //客户端通知跟战跳场景
+    CS_FOLLOW_FIGHT_JUMP_IN_SCENE_REQ = 4326;
+    CS_FOLLOW_FIQHT_JUMP_IN_SCENE_RES = 4327;
+
+    //运营活动充值返利
+    CS_RECHARGE_REBATE_REQ = 4328;
+    CS_RECHARGE_REBATE_RES = 4329;
+    //华山论剑决赛排行榜
+    CS_HUA_SHAN_FINAL_RANKINGS_REQ = 4330;
+    CS_HUA_SHAN_FINAL_RANKINGS_RES = 4331;
+    //华山论剑冠军
+    CS_HUA_SHAN_CHAMPION_REQ = 4332;
+    CS_HUA_SHAN_CHAMPION_RES = 4333;
+
+    //运营活动充值返利结束
+    CS_EVERY_REBATE_END_NOTIFY = 4337;
+
+    //重置CP资料
+    CS_RESET_CP_INFO_REQ = 4341;
+    CS_RESET_CP_INFO_RES = 4342;
+
+    //群英会离开队伍
+    CS_GROUP_HERO_LEAVE_TEAM_REQ = 4334;
+    CS_GROUP_HERO_LEAVE_TEAM_RES = 4335;
+
+    //群英会队友离开队伍
+    CS_GROUP_HERO_TEAMMATE_LEAVE_TEAM_NOTIFY = 4336;
+
+    //群英会匹配到队友
+    CS_GROUP_HERO_MATCH_TEAMMATE_NOTIFY = 4338;
+    //群英会队友数据请求
+    CS_GROUP_HERO_TEAMMATE_DATA_REQ = 4339;
+    CS_GROUP_HERO_TEAMMATE_DATA_RES = 4340;
+
+    //进入群英、战斗场景上线、等待场景上线推送一次主动技能
+    CS_GROUOP_HERO_ENTER_ONLINE_SKILL_NOTIFY = 4347;
+    //群英会结束消息
+    CS_GROUP_HERO_ACTIVITY_END_NOTIFY = 4348;
+
+	//技能突破
+	CS_SKILL_PROMOTE_REQ = 4350;
+	CS_SKILL_PROMOTE_RES = 4351;
+
+    //退出地图MapBase
+    CS_LEAVE_MAP_REQ = 4343;
+    CS_LEAVE_MAP_RES = 4344;
+    //参加华山论剑比赛请求
+    CS_JOIN_HUA_SHAN_REQ = 4345;
+    CS_JOIN_HUA_SHAN_RES = 4346;
+
+    //队友已经参加华山论剑的通知
+    CS_JOIN_HUA_SHAN_NOTIFY = 4349;
+
+
+
+    //确认向对方订婚
+    CS_CONFIRM_BETROTHAL_REQ = 4364;
+    CS_CONFIRM_BETROTHAL_RES = 4365;
+
+    //帮会圣诞雪人
+    CS_QUERY_SNOWMAN_REQ = 4366;
+    CS_QUERY_SNOWMAN_RES = 4367;
+    CS_DONATE_SNOWMAN_REQ = 4368;
+    CS_DONATE_SNOWMAN_RES = 4369;
+    CS_REFRESH_SNOWMAN_NOTIFY = 4370;
+
+    //结婚特效
+    CS_MARRY_SPECIAL_EFFECTS_NOTIFY = 4371;
+
+    //赠送时装
+    CS_GIVE_OUT_WARD_REQ = 4372;
+    CS_GIVE_OUT_WARD_RES = 4373;
+
+    //获取赠送时装次数
+    CS_GET_GIVE_OUTWARD_COUNT_REQ = 4374;
+    CS_GET_GIVE_OUTWARD_COUNT_RES = 4375;
+
+    //抓娃娃begin
+    CS_BUY_GRAP_DOLL_PROP_RES = 4376;
+    CS_GRAP_DOLL_REQ = 4377;
+    CS_GRAP_DOLL_RES = 4378;
+    CS_EXCHANGE_DOLL_SCORE_REQ = 4379;
+    CS_EXCHANGE_DOLL_SCORE_RES = 4380;
+    CS_GRAP_DOLL_OPEN_NOTIFY = 4381;
+    CS_GRAP_DOLL_END_NOTIFY = 4382;
+    CS_RESET_GRAP_DOLL_DAY_NOTIFY = 4383;
+    CS_REFRESH_DOLL_DATA_NOTIFY = 4384;
+    CS_ROLE_GRAP_DOLL_INFO_REQ = 4385;
+    CS_ROLE_GRAP_DOLL_INFO_RES = 4386;
+    CS_REFRESH_DOLL_POOL_REQ = 4387;
+    CS_REFRESH_DOLL_POOL_RES = 4388;
+    CS_BUY_GRAP_DOLL_PROP_REQ = 4389;
+    //抓娃娃end
+
+    //神兽涅槃
+    CS_BEAST_NIRVANA_REQ = 4390;
+    CS_BEAST_NIRVANA_RES = 4391;
+
+    CS_OPEN_SHARE_STORE_NOTIFY = 4392;
+
+
+    /*---- 神兽宝石 ----*/
+    CS_GET_MONSTER_HOLE_INFO_REQ = 4393;
+    CS_GET_MONSTER_HOLE_INFO_RES = 4394;
+
+    CS_EQUIP_MONSTER_HOLE_REQ = 4395;
+    CS_EQUIP_MONSTER_HOLE_RES = 4396;
+
+    CS_CHANGE_MONSTER_HOLE_NOTIFY = 4397;
+    /*---- 神兽宝石END ----*/
+    //灵宠系统
+    CS_OPEN_FAIRY_SYSTEM_NOTIFY          = 4400;
+   OLD_PLAYER_SYN_FAIRY_OPENINFO_NOTIFY = 4401;
+    CS_PLAYER_SYN_FAIRY_OPEN_STATUS_REQ  = 4402;
+    CS_PLAYER_SYN_FAIRY_OPEN_STATUS_RES  = 4403;
+    CS_QUERY_FAIRY_DATA_REQ              = 4404;
+    CS_QUERY_FAIRY_DATA_RES              = 4405;
+    CS_FAIRY_UPGRADE_REQ                 = 4406;
+    CS_FAIRY_UPGRADE_RES                 = 4407;
+    CS_FAIRY_SET_AUTO_UPGRADE_REQ        = 4408;
+    CS_FAIRY_SET_AUTO_UPGRADE_RES        = 4409;
+    CS_FAIRY_INJECT_SOUL_REQ             = 4410;
+    CS_FAIRY_INJECT_SOUL_RES             = 4411;
+    CS_ACTIVE_ACTIVITY_FAIRY_REQ         = 4412;
+    CS_ACTIVE_ACTIVITY_FAIRY_RES         = 4413;
+    CS_FAIRY_ILLUSION_REQ                = 4414;
+    CS_FAIRY_ILLUSION_RES                = 4415;
+    CS_FAIRY_SET_SHOW_FLAG_REQ           = 4416;
+    CS_FAIRY_SET_SHOW_FLAG_RES           = 4417;
+    //消费有礼
+    CS_CONSUMPTION_AWARD_INFO_REQ = 4438;
+    CS_CONSUMPTION_AWARD_INFO_RES = 4439;
+    CS_ACT_START_NOTIFY = 4440;
+    CS_ACT_END_NOFITY = 4441;
+    CS_CONSUMPTION_AWARD_EXCHANGE_REQ = 4442;
+    CS_CONSUMPTION_AWARD_EXCHANGE_RES = 4443;
+    CS_REACH_CONDITION_NOTIFY = 4444;
+
+    //华山论剑决赛竞猜
+    CS_HUA_SHAN_FINAL_GUESS_REQ = 4445;
+    CS_HUA_SHAN_FINAL_GUESS_RES = 4446;
+
+
+    //-------建议从4392开始使用，以防合入ob冲突---------
+
+    //双周礼包
+    CS_BIWEEKLY_GIFT_INFO_REQ = 4447;
+    CS_BIWEEKLY_GIFT_INFO_RES = 4448;
+    CS_BIWEEKLY_GIFT_START_NOTIFY = 4449;
+    CS_BIWEEKLY_GIFT_END_NOTIFY = 4450;
+    CS_BIWEEKLY_GIFT_BUY_SUCCESS_NOTIFY = 4451;
+
+
+
+    // CP任务奖励获取通知
+    CS_SEVEN_CP_AWARD_NOTIFY = 4452;
+
+    //赠送羽翼
+    CS_GIVE_WING_REQ = 4459;
+    CS_GIVE_WING_RES = 4460;
+
+    //获取赠送羽翼次数
+    CS_GET_GIVE_WING_COUNT_REQ = 4461;
+    CS_GET_GIVE_WING_COUNT_RES = 4462;
+
+    //赠送灵宠
+    CS_GIVE_FAIRY_REQ = 4463;
+    CS_GIVE_FAIRY_RES = 4464;
+
+    //获取赠送灵宠次数
+    CS_GET_GIVE_FAIRY_COUNT_REQ = 4465;
+    CS_GET_GIVE_FAIRY_COUNT_RES = 4466;
+
+    //华山论剑决战观战
+    CS_HUA_SHAN_COMPET_WATCH_REQ = 4471;
+    CS_HUA_SHAN_COMPET_WATCH_RES = 4472;
+    //华山论剑选择上阵神兽
+    CS_HUA_SHAN_CHOOSE_BEAST_REQ = 4473;
+    CS_HUA_SHAN_CHOOSE_BEAST_RES  = 4474;
+
+    //新年答题
+    CS_NEW_YEAR_ISSUE_RANDOM_REQ = 4475;
+    CS_NEW_YEAR_ISSUE_RANDOM_RES = 4476;
+
+
+    CS_NEW_YEAR_ISSUE_SUBMIT_REQ = 4477;
+    CS_NEW_YEAR_ISSUE_SUBMIT_RES = 4478;
+    //滚服活动
+    //主界面icon notify
+    CS_MULTI_SERVER_PLAYER_ACT_OPEN_NOTIFY = 4429;
+
+    CS_GET_NEW_YEAR_ISSUE_LIST_REQ = 4479;
+    CS_GET_NEW_YEAR_ISSUE_LIST_RES = 4480;
+
+    CS_NEW_YEAR_ISSUE_RESPON_REQ = 4481;
+    CS_NEW_YEAR_ISSUE_RESPON_RES = 4482;
+
+    CS_NEW_YEAR_ISSUE_PAGE_TURN_REQ = 4483;
+    CS_NEW_YEAR_ISSUE_PAGE_TURN_RES = 4484;
+
+    //零点刷新客户端新年答题数据Notice
+    ZERO_FRESH_NEW_YEAR_ISSUE_NOTIFY = 4485;
+
+
+
+    //组合排行榜
+    CS_COMBI_RANK_ACT_INFO_REQ = 4467;
+    CS_COMBI_RANK_ACT_INFO_RES = 4468;
+
+    //组合排行榜 - 查看排行榜
+    CS_COMBI_RANK_GET_RANK_INFO_REQ  = 4453;
+    CS_COMBI_RANK_GET_RANK_INFO_RES  = 4454;
+
+    //组合排行榜-查看我的奖励详情
+    CS_COMBI_RANK_GET_MY_DETAIL_REQ = 4455;
+    CS_COMBI_RANK_GET_MY_DETAIL_RES = 4456;
+
+    //组合排行榜-战力对比
+    CS_COMBI_RANK_COMPARE_REQ = 4457;
+    CS_COMBI_RANK_COMPARE_RES = 4458;
+
+    //组合排行榜-领取阶段性奖励
+    CS_COMBI_RANK_GET_REWARD_REQ = 4486;
+    CS_COMBI_RANK_GET_REWARD_RES = 4487;
+
+	//滚服活动    
+	CS_GET_ROLLSEVER_INFO_REQ = 4436;
+	CS_GET_ROLLSEVER_INFO_RES = 4437;
+
+    //点击icon 请求主界面
+    CS_MULTI_SERVER_PLAYER_ACT_INFO_REQ = 4430;
+    CS_MULTI_SERVER_PLAYER_ACT_INFO_RES = 4431;
+
+    //滚服奖励界面
+    CS_MULTI_SERVER_PLAYER_ACT_REWARD_INFO_REQ = 4432;
+    CS_MULTI_SERVER_PLAYER_ACT_REWARD_INFO_RES = 4433;
+
+    //领取滚服奖励
+    CS_GET_MULTI_SERVER_PLAYER_ACT_REWARD_REQ  = 4434;
+    CS_GET_MULTI_SERVER_PLAYER_ACT_REWARD_RES  = 4435;
+
+    //跟战目标跳场景
+    CS_FOLLOW_PLAYER_JUMP_SCENE_NOTIFY = 4398;
+    
+    // 最大的客户端命令字，所有的命令字不能超过这个值
+    CS_MAX_CMD_TYPE = 9999;
+}
+
+enum EnmLoginType
+{
+    ENM_LOGIN_TYPE_INVALID     = 0;
+
+    // 创建角色
+    ENM_LOGIN_TYPE_CREATE_ROLE = 1;
+
+    // 角色登陆成功
+    ENM_LOGIN_TYPE_ROLE        = 2;
+
+    // 账号登陆, 此状态下客户端还需要发起角色登陆
+    ENM_LOGIN_TYPE_ACC         = 3;
+
+    // 登陆需要跳场景
+    ENM_LOGIN_TYPE_CHG_SCENE   = 4;
+}
+
+enum EnmCreateRoleCode
+{
+    // 创建角色成功
+    ENM_CREATE_ROLE_CODE_SUCC = 0;
+
+    // 姓名重复
+    ENM_CREATE_ROLE_CODE_NAME = 190001;
+
+    // 姓名中包含敏感字
+    ENM_CREATE_ROLE_CODE_SENSITIVE = 190002;
+
+    // 姓名中包含非法字符
+    ENM_CREATE_ROLE_CODE_INVALID = 190003;
+
+    // 姓名太长
+    ENM_CREATE_ROLE_CODE_TOO_LONG = 190004;
+
+	//状态出错，重新连接
+	ENM_ERR_STATE_NEED_RECONNECT = 190005;
+
+	//角色已经创建成功，可以进入游戏
+	ENM_ERR_ROLE_ALREADY_DONE = 190006;
+}
+
+enum EnmSexType
+{
+    // 女性
+    ENM_SEX_TYPE_FEMALE = 0;
+
+    // 男性
+    ENM_SEX_TYPE_MALE   = 1;
+}
+
+enum EnmEquipOp
+{
+    //装备的脱/穿
+    ACTION_TYPE_TACK_ON = 1;
+    ACTION_TYPE_TACK_OFF = 2;
+}
+
+enum EnmWorldLoadType
+{
+    ENM_WORLD_LOAD_TYPE_IDLE = 0;
+    ENM_WORLD_LOAD_TYPE_MIDDLE = 1;
+    ENM_WORLD_LOAD_TYPE_BUSY = 2;
+	ENM_WORLD_LOAD_TYPE_OFFLINE = 3;
+}
+
+enum EnmLoginErrCode
+{
+    ENM_LOGIN_ERR_SUCC      = 0;
+
+    // 数据库错误
+    ENM_LOGIN_ERR_DB   = 210001;
+
+    // 您在其他地方正在登陆中
+    ENM_LOGIN_ERR_LOGINING = 210002;
+
+    // 服务器满员了，请稍后登陆
+    ENM_LOGIN_ERR_ONLINE_FULL = 210003;
+
+    // 找不到角色对象
+    ENM_LOGIN_ERR_ONLINE_NOT_FOUND = 210004;
+
+    // 游戏场景已经满，不能登陆
+    ENM_LOGIN_ERR_ZONE_FULL = 210005;
+
+    // 认证错误
+    ENM_LOGIN_ERR_AUTH = 210006;
+
+    // 账号错误
+    ENM_LOGIN_ERR_NONE_ACC = 210007;
+
+    // 不在白名单中
+    ENM_LOGIN_ERR_NO_WHITE_LIST = 210008;
+
+    // 系统超时
+    ENM_LOGIN_ERR_TIME_OUT = 210009;
+
+    // 登录账号被限制
+    ENM_LOGIN_ERR_ACC_LIMIT = 210010;
+
+    // 登录IP被限制
+    ENM_LOGIN_ERR_IP_LIMIT = 210011;
+
+    // 请重新登陆
+    ENM_LOGIN_ERR_RELOGIN  = 210014;
+
+    // 需要升级
+    ENM_LOGIN_ERR_NEEDUPDATE  = 210015;
+
+    // 切换场景失败
+    ENM_LOGIN_ERR_CHG_FAILED = 210016;
+
+    // 客户端版本号太旧，请更新版本后再登陆
+    ENM_LOGIN_ERR_OLD_VERSION = 210021;
+
+    // 正在跳转中，请稍后登陆
+    ENM_LOGIN_ERR_OCCUPYING = 210031;
+
+	//永久封号
+	ENM_LOGIN_FORBID_USER_FORVER = 210032;
+
+	//时间段封号
+	ENM_LOGIN_FORBID_USER_SOMETIME = 210033;
+    //服务器人数达到上限
+    ENM_LOGIN_MAX_PLYAER = 210034;
+	//登录排队
+	ENM_LOGIN_WAIT_QUEUE = 210035;
+}
+
+enum EnmKickOffReason
+{
+    ENM_KICK_OFF_REASON_UNKNOWN = 0;
+
+    // 客户端版本号太旧，请更新版本后再登陆
+    ENM_KICK_OFF_REASON_OLD_VERSION = 210021;
+
+    // 您已在其他设备上登陆
+    ENM_KICK_OFF_REASON_DUPLICATE = 210022;
+
+    // 由于违规操作被踢下线
+    ENM_KICK_OFF_REASON_FORBID    = 210023;
+
+}
+
+
