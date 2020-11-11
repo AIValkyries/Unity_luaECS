@@ -1,5 +1,5 @@
 require("Global");
-require("protocol_generated.cs_enum_pb");
+--require("protocol_generated.cs_enum_pb");
 require("protobuf_conf_parsers.dataconfig_levelconfig_pb")
 
 LuaGameWorld = require("Logic.LuaGameWorld");
