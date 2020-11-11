@@ -101,7 +101,11 @@ class TreeNode(object):
             out.append(pos.name)
             pos = pos.parent
         out.reverse()
-        return '.'.join(out)
+        # 去掉package path第一个点
+        rtn = '.'.join(out)
+        if rtn.startswith("."):
+            rtn = rtn[1:]
+        return rtn
 
     def get_global_name(self):
         return self.get_path()
@@ -131,6 +135,7 @@ class Env(object):
     extend = None
     descriptor = None
     message = None
+    enum = None
     context = None
     register = None
     def __init__(self):
@@ -143,15 +148,19 @@ class Env(object):
     def get_local_name(self):
         return self.scope.get_local_name()
 
+    # return (ref_name, isImportFromOtherProto)
     def get_ref_name(self, type_name):
         try:
             node = self.lookup_name(type_name)
         except:
             # if the child doesn't be founded, it must be in this file
-            return type_name[len('.'.join(self.package)) + 1:]
+            length = len('.'.join(self.package))
+            if length > 0: # have package path, offset++
+                length += 1
+            return (type_name[length + 1:], False)
         if node.filename != self.filename:
-            return node.filename + '_pb.' + node.get_local_name()
-        return node.get_local_name()
+            return (node.filename + '_pb.' + node.get_local_name(), True)
+        return (node.get_local_name(), False)
 
     def lookup_name(self, name):
         names = name.split('.')
@@ -196,6 +205,7 @@ class Env(object):
         self.descriptor = []
         self.context = []
         self.message = []
+        self.enum = []
         self.register = []
 
     def _build_nodes(self, node, names):
@@ -249,8 +259,9 @@ DEFAULT_VALUE = {
 def code_gen_enum_item(index, enum_value, env):
     full_name = env.get_local_name() + '.' + enum_value.name
     obj_name = full_name.upper().replace('.', '_') + '_ENUM'
+    obj_name = "localTable." + obj_name
     env.descriptor.append(
-        "local %s = protobuf.EnumValueDescriptor();\n"% obj_name
+        "%s = protobuf.EnumValueDescriptor()\n"% obj_name
     )
 
     context = Writer(obj_name)
@@ -265,8 +276,9 @@ def code_gen_enum(enum_desc, env):
     env.enter(enum_desc.name)
     full_name = env.get_local_name()
     obj_name = full_name.upper().replace('.', '_')
+    obj_name = "localTable." + obj_name
     env.descriptor.append(
-        "local %s = protobuf.EnumDescriptor();\n"% obj_name
+        "%s = protobuf.EnumDescriptor()\n"% obj_name
     )
 
     context = Writer(obj_name)
@@ -285,8 +297,9 @@ def code_gen_enum(enum_desc, env):
 def code_gen_field(index, field_desc, env):
     full_name = env.get_local_name() + '.' + field_desc.name
     obj_name = full_name.upper().replace('.', '_') + '_FIELD'
+    obj_name = "localTable." + obj_name
     env.descriptor.append(
-        "local %s = protobuf.FieldDescriptor();\n"% obj_name
+        "%s = protobuf.FieldDescriptor()\n"% obj_name
     )
 
     context = Writer(obj_name)
@@ -316,14 +329,23 @@ def code_gen_field(index, field_desc, env):
         context('.default_value = %s\n' % default_value)
 
     if field_desc.HasField('type_name'):
-        type_name = env.get_ref_name(field_desc.type_name).upper().replace('.', '_')
+        # case 1: type import from other file, should use ABC_PB.XXX_XXX
+        # case 2: local enum_type had been moved in localTable, should use localTable.XXX_XXX
+        # case 3: local message_type should use XXX_XXX
+        (type_name, isImport) = env.get_ref_name(field_desc.type_name)
+        type_name = type_name.upper()
+        if not isImport:
+            type_name = type_name.replace('.', '_')
+            if field_desc.type == FDP.TYPE_ENUM:
+                type_name = "localTable." + type_name
+
         if field_desc.type == FDP.TYPE_MESSAGE:
             context('.message_type = %s\n' % type_name)
         else:
             context('.enum_type = %s\n' % type_name)
 
     if field_desc.HasField('extendee'):
-        type_name = env.get_ref_name(field_desc.extendee)
+        (type_name, isImport) = env.get_ref_name(field_desc.extendee)
         env.register.append(
             "%s.RegisterExtension(%s)\n" % (type_name, obj_name)
         )
@@ -338,7 +360,7 @@ def code_gen_message(message_descriptor, env, containing_type = None):
     full_name = env.get_local_name()
     obj_name = full_name.upper().replace('.', '_')
     env.descriptor.append(
-        "local %s = protobuf.Descriptor();\n"% obj_name
+        "%s = protobuf.Descriptor()\n"% obj_name
     )
 
     context = Writer(obj_name)
@@ -354,6 +376,8 @@ def code_gen_message(message_descriptor, env, containing_type = None):
     enums = []
     for enum_desc in message_descriptor.enum_type:
         enums.append(code_gen_enum(enum_desc, env))
+        # for enum_value in enum_desc.value:
+        #     env.enum.append('%s = %d\n' % (enum_value.name, enum_value.number))
     context('.enum_types = {%s}\n' % ', '.join(enums))
 
     fields = []
@@ -386,6 +410,7 @@ def write_header(writer):
 """)
 
 def code_gen_file(proto_file, env, is_gen):
+
     filename = path.splitext(proto_file.name)[0]
     env.enter_file(filename, proto_file.package)
 
@@ -399,9 +424,8 @@ def code_gen_file(proto_file, env, is_gen):
 
     for enum_desc in proto_file.enum_type:
         code_gen_enum(enum_desc, env)
-        for enum_value in enum_desc.value:
-            env.message.append('%s = %d\n' % (enum_value.name,
-                                              enum_value.number))
+        # for enum_value in enum_desc.value:
+        #    env.enum.append('%s = %d\n' % (enum_value.name, enum_value.number))
 
     for msg_desc in proto_file.message_type:
         code_gen_message(msg_desc, env)
@@ -409,13 +433,16 @@ def code_gen_file(proto_file, env, is_gen):
     if is_gen:
         lua = Writer()
         write_header(lua)
-        lua('local protobuf = require "protobuf/protobuf"\n')
+        lua('local protobuf = require "protobuf.protobuf"\n')
         for i in includes:
-            lua('local %s_pb = require("protocol_generated/%s_pb")\n' % (i, i))
+            lua('local %s_PB = require("%s_pb")\n' % (i.upper(), i))
         #lua("module('%s_pb')\n" % env.filename)
 
         lua('\n\n')
+        lua("local localTable = {}\n")
         map(lua, env.descriptor)
+        lua('\n')
+        map(lua, env.enum)
         lua('\n')
         map(lua, env.context)
         lua('\n')
@@ -447,4 +474,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
